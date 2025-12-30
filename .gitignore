@@ -1,0 +1,26 @@
+.bundle/
+.yardoc/
+/.yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+
+# Ruby
+*.gem
+*.rbc
+*.bundle
+*.so
+*.o
+*.a
+*.log
+
+# Bundler
+/vendor/bundle
+
+# Editors/OS
+.DS_Store
+.idea/
+.vscode/
+
