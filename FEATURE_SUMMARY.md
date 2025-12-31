@@ -15,4 +15,5 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 - The `wheneverd` CLI is implemented using the Clamp gem (help/usage and errors follow Clamp defaults).
 - With no arguments, prints help to stderr and exits non-zero (placeholder behavior).
 - The gem includes a small “whenever-like” domain model (interval parsing, durations, triggers, schedules).
+- The gem can load a Ruby schedule DSL file via `Wheneverd::DSL::Loader.load_file`, supporting `every(...) { command(...) }`.
 - Does not generate systemd units/timers yet.
