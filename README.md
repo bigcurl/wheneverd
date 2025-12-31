@@ -78,7 +78,6 @@ Supported `period` forms:
 - Duration objects: `1.second`, `1.minute`, `1.hour`, `1.day`, `1.week` (and plurals), using the same interval semantics.
 - Symbol shortcuts:
   - `:hour`, `:day`, `:month`, `:year` (calendar schedules, mapped to `hourly`, `daily`, `monthly`, `yearly`)
-  - `:reboot` (boot schedule, mapped to `OnBootSec=60`)
 - Day selectors: `:monday..:sunday`, plus `:weekday` and `:weekend` (calendar schedules).
 - Cron strings (5 fields), like `"0 0 27-31 * *"` (calendar schedules).
 

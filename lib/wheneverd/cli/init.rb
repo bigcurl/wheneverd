@@ -14,7 +14,7 @@ module Wheneverd
       # Supported `every` period forms:
       # - interval strings: "5m", "1h", "2d"
       # - duration objects: 1.day, 2.hours
-      # - symbol shortcuts: :hour, :day, :month, :year, :reboot
+      # - symbol shortcuts: :hour, :day, :month, :year
       # - day selectors: :sunday, :weekday, :weekend (use `at:` for specific times)
       # - cron strings (5 fields): "0 0 27-31 * *" (limited subset)
 

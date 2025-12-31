@@ -110,16 +110,17 @@ class DSLLoaderSymbolPeriodsTest < Minitest::Test
     assert_equal ["hour"], entry.trigger.on_calendar
   end
 
-  def test_loads_symbol_shortcut_reboot
-    schedule = load_schedule(<<~RUBY)
+  def test_reboot_symbol_is_rejected
+    schedule_path = write_schedule(<<~RUBY)
       every :reboot do
         command "echo reboot"
       end
     RUBY
 
-    entry = schedule.entries.fetch(0)
-    assert_instance_of Wheneverd::Trigger::Boot, entry.trigger
-    assert_equal 60, entry.trigger.seconds
+    error = assert_raises(Wheneverd::DSL::InvalidPeriodError) { Wheneverd::DSL::Loader.load_file(schedule_path) }
+    assert_includes error.message, schedule_path
+    assert_includes error.message, ":reboot"
+    assert_includes error.message, "not supported"
   end
 
   def test_loads_day_selector_symbol_with_at
@@ -264,6 +265,7 @@ class DSLLoaderPeriodErrorsTest < Minitest::Test
     error = assert_raises(Wheneverd::DSL::InvalidPeriodError) { Wheneverd::DSL::Loader.load_file(schedule_path) }
     assert_includes error.message, schedule_path
     assert_includes error.message, ":reboot"
+    assert_includes error.message, "not supported"
   end
 end
 

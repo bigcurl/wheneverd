@@ -4,7 +4,8 @@ module Wheneverd
   module DSL
     class PeriodParser
       DAY_SECONDS = 60 * 60 * 24
-      DEFAULT_REBOOT_SECONDS = 60
+      REBOOT_NOT_SUPPORTED_MESSAGE =
+        "The :reboot period is not supported; use an interval or calendar period instead"
 
       CALENDAR_SYMBOLS = %i[
         hour
@@ -92,7 +93,7 @@ module Wheneverd
       end
 
       def symbol_trigger_for(sym, at_times:)
-        return reboot_trigger(at_times) if sym == :reboot
+        raise InvalidPeriodError.new(REBOOT_NOT_SUPPORTED_MESSAGE, path: path) if sym == :reboot
 
         if CALENDAR_SYMBOLS.include?(sym)
           return Wheneverd::Trigger::Calendar.new(
@@ -101,14 +102,6 @@ module Wheneverd
         end
 
         raise InvalidPeriodError.new("Unknown period symbol: #{sym.inspect}", path: path)
-      end
-
-      def reboot_trigger(at_times)
-        if at_times.any?
-          raise InvalidPeriodError.new("at: is not supported for :reboot", path: path)
-        end
-
-        Wheneverd::Trigger::Boot.new(seconds: DEFAULT_REBOOT_SECONDS)
       end
 
       def build_calendar_specs(base, at_times)
