@@ -6,7 +6,7 @@ Tagline / repo: `git@github.com:bigcurl/wheneverd.git`
 
 ## Status
 
-Early scaffold: Ruby schedule DSL loading and systemd unit rendering are implemented as library APIs; the CLI is still a placeholder.
+Early scaffold: DSL loading, systemd rendering, and safe unit write/delete are implemented as library APIs; the CLI is still a placeholder.
 
 See `FEATURE_SUMMARY.md` for high-level user-visible behavior, and `CHANGELOG.md` for release notes (once versioned releases begin).
 
