@@ -6,7 +6,7 @@ Tagline / repo: `git@github.com:bigcurl/wheneverd.git`
 
 ## Status
 
-Early scaffold: gem structure + a placeholder Clamp-based CLI are in place; the systemd generation features are not implemented yet.
+Early scaffold: Ruby schedule DSL loading and systemd unit rendering are implemented as library APIs; the CLI is still a placeholder.
 
 See `FEATURE_SUMMARY.md` for high-level user-visible behavior, and `CHANGELOG.md` for release notes (once versioned releases begin).
 
