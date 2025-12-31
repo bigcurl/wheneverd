@@ -7,3 +7,4 @@
 - Adds a Ruby DSL loader (`Wheneverd::DSL::Loader.load_file`) supporting `every(...)` blocks with `command(...)` jobs.
 - Adds systemd unit rendering (`Wheneverd::Systemd::Renderer.render`) for interval, calendar, and reboot triggers.
 - Adds helpers to write and delete generated unit files (`Wheneverd::Systemd::UnitWriter`/`UnitDeleter`).
+- Adds CLI subcommands: `init`, `show`, `write`, and `delete`.
