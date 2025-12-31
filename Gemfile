@@ -8,4 +8,5 @@ group :development, :test do
   gem "minitest"
   gem "rake"
   gem "rubocop", "~> 1.0", require: false
+  gem "simplecov", require: false
 end

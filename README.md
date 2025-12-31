@@ -34,3 +34,4 @@ wheneverd --help
 bundle exec rake test
 ```
 
+Test runs write a coverage report to `coverage/`.
