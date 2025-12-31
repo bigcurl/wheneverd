@@ -5,4 +5,3 @@ require_relative "wheneverd/version"
 module Wheneverd
   class Error < StandardError; end
 end
-

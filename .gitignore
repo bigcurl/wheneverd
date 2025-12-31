@@ -6,6 +6,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+.rubocop_cache/
 
 # Ruby
 *.gem
@@ -23,4 +24,3 @@
 .DS_Store
 .idea/
 .vscode/
-

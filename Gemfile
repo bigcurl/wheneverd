@@ -5,7 +5,7 @@ source "https://rubygems.org"
 gemspec
 
 group :development, :test do
-  gem "rake"
   gem "minitest"
+  gem "rake"
+  gem "rubocop", "~> 1.0", require: false
 end
-

@@ -7,4 +7,3 @@ class WheneverdTest < Minitest::Test
     refute_nil ::Wheneverd::VERSION
   end
 end
-
