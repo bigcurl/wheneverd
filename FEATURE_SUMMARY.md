@@ -23,3 +23,4 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 - The gem can render systemd `.service` and `.timer` units via `Wheneverd::Systemd::Renderer.render`.
 - The gem can write/delete generated unit files via `Wheneverd::Systemd::UnitWriter` and `Wheneverd::Systemd::UnitDeleter`.
 - The `wheneverd` CLI supports `init`, `show`, `write`, and `delete` for working with schedule files and user unit directories.
+- `wheneverd init` prints whether it wrote or overwrote the schedule template.

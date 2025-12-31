@@ -11,3 +11,4 @@ Once releases begin, entries will be moved into `## x.y.z` sections that match t
 - Adds systemd unit rendering (`Wheneverd::Systemd::Renderer.render`) for interval, calendar, and reboot triggers.
 - Adds helpers to write and delete generated unit files (`Wheneverd::Systemd::UnitWriter`/`UnitDeleter`).
 - Adds CLI subcommands: `init`, `show`, `write`, and `delete`.
+- `wheneverd init` prints whether it wrote or overwrote the schedule template.

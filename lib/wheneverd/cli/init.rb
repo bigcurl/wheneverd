@@ -45,16 +45,29 @@ module Wheneverd
 
     def execute
       path = File.expand_path(schedule)
-      if File.exist?(path) && !force?
-        warn "#{path}: already exists (use --force to overwrite)"
-        return 1
-      end
+      return 1 if refuse_overwrite_without_force?(path)
 
-      FileUtils.mkdir_p(File.dirname(path))
-      File.write(path, TEMPLATE)
+      existed = write_template(path)
+      puts "#{existed ? 'Overwrote' : 'Wrote'} schedule template to #{path}"
       0
     rescue StandardError => e
       handle_error(e)
+    end
+
+    private
+
+    def refuse_overwrite_without_force?(path)
+      return false unless File.exist?(path) && !force?
+
+      warn "#{path}: already exists (use --force to overwrite)"
+      true
+    end
+
+    def write_template(path)
+      existed = File.exist?(path)
+      FileUtils.mkdir_p(File.dirname(path))
+      File.write(path, TEMPLATE)
+      existed
     end
   end
 end

@@ -67,8 +67,10 @@ class CLIInitTest < Minitest::Test
 
   def test_init_creates_schedule_file
     with_project_dir do
-      status, = run_cli(["init"])
+      status, out, err = run_cli(["init"])
       assert_equal 0, status
+      assert_includes out, "Wrote schedule template"
+      assert_equal "", err
       assert File.file?(File.join("config", "schedule.rb"))
     end
   end
@@ -92,8 +94,10 @@ class CLIInitTest < Minitest::Test
       FileUtils.mkdir_p(File.dirname(path))
       File.write(path, "# existing\n")
 
-      status, = run_cli(["init", "--force"])
+      status, out, err = run_cli(["init", "--force"])
       assert_equal 0, status
+      assert_includes out, "Overwrote schedule template"
+      assert_equal "", err
       assert_includes File.read(path), "every \"5m\""
     end
   end
