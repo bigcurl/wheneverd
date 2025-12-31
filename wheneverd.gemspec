@@ -30,4 +30,6 @@ Gem::Specification.new do |spec|
   spec.bindir = "exe"
   spec.executables = ["wheneverd"]
   spec.require_paths = ["lib"]
+
+  spec.add_dependency "clamp", "~> 1.3"
 end

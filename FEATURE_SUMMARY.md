@@ -12,10 +12,6 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 
 ## Unreleased
 
-- (none yet)
-
-## 0.1.0
-
-- Adds a scaffold `wheneverd` CLI with `--help`, `--version`, and `--verbose`.
+- The `wheneverd` CLI is implemented using the Clamp gem (help/usage and errors follow Clamp defaults).
 - With no arguments, prints help to stderr and exits non-zero (placeholder behavior).
 - Does not generate systemd units/timers yet.

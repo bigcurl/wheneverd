@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0
+## Unreleased
 
-- Initial gem scaffold (no systemd generation yet).
-
+- Provides a Clamp-based `wheneverd` CLI with `--help`, `--version`, and `--verbose` (help/usage and errors follow Clamp defaults).
+- Does not generate systemd units/timers yet.

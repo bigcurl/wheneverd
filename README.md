@@ -6,9 +6,9 @@ Tagline / repo: `git@github.com:bigcurl/wheneverd.git`
 
 ## Status
 
-Early scaffold: gem structure + a placeholder CLI are in place; the systemd generation features are not implemented yet.
+Early scaffold: gem structure + a placeholder Clamp-based CLI are in place; the systemd generation features are not implemented yet.
 
-See `FEATURE_SUMMARY.md` for high-level user-visible changes, and `CHANGELOG.md` for versioned release notes.
+See `FEATURE_SUMMARY.md` for high-level user-visible behavior, and `CHANGELOG.md` for release notes (once versioned releases begin).
 
 ## Installation
 
