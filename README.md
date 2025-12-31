@@ -34,6 +34,26 @@ wheneverd write
 wheneverd delete
 ```
 
+### Minimal `config/schedule.rb` example
+
+```ruby
+# frozen_string_literal: true
+
+every "5m" do
+  command "echo hello"
+end
+
+every 1.day, at: "4:30 am" do
+  command "echo four_thirty"
+end
+```
+
+Preview the generated units:
+
+```bash
+wheneverd show
+```
+
 ## Syntax
 
 Schedules are defined in a Ruby file (default: `config/schedule.rb`) and evaluated in a dedicated DSL context.

@@ -1,5 +1,8 @@
 # Changelog
 
+This project keeps all changes in `## Unreleased` until the CLI and generated systemd output settle.
+Once releases begin, entries will be moved into `## x.y.z` sections that match the gem version.
+
 ## Unreleased
 
 - Provides a Clamp-based `wheneverd` CLI with `--help`, `--version`, and `--verbose` (help/usage and errors follow Clamp defaults).
