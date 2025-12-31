@@ -9,7 +9,7 @@ Rake::TestTask.new do |t|
   t.pattern = "test/**/*_test.rb"
 end
 
-task default: :test
+task default: :ci
 
 def rubocop_corrected_count(output)
   output.scan(/(\d+)\s+offenses?\s+corrected\b/i).flatten.sum(&:to_i)
