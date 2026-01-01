@@ -1,6 +1,6 @@
 # wheneverd
 
-Wheneverd is to systemd timers what the `whenever` gem is to cron.
+Wheneverd is to systemd timers what the [`whenever` gem](https://github.com/javan/whenever) is to cron.
 
 Tagline / repo: `git@github.com:bigcurl/wheneverd.git`
 
