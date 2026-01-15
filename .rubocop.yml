@@ -19,3 +19,23 @@ Style/StringLiterals:
 
 Metrics:
   Enabled: true
+
+Metrics/AbcSize:
+  Exclude:
+    - "lib/wheneverd/systemd/cron_parser.rb"
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - "lib/wheneverd/systemd/cron_parser.rb"
+
+Metrics/MethodLength:
+  Exclude:
+    - "lib/wheneverd/systemd/cron_parser.rb"
+
+Metrics/ModuleLength:
+  Exclude:
+    - "lib/wheneverd/systemd/cron_parser.rb"
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - "lib/wheneverd/systemd/cron_parser.rb"
