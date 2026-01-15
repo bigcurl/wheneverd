@@ -5,9 +5,11 @@ On release, entries are moved into `## x.y.z` sections that match the gem versio
 
 ## Unreleased
 
+## 0.2.0
+
 - Adds `wheneverd linger enable|disable|status` for managing systemd user lingering via `loginctl`.
 
-## 0.2.0
+## 0.1.0
 
 - Provides a Clamp-based `wheneverd` CLI with `--help`, `--version`, and `--verbose` (usage errors in `ERROR: ...` format).
 - Adds core domain objects and helpers for building schedules (interval parsing, durations, triggers, entries, jobs).
