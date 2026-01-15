@@ -5,6 +5,8 @@ On release, entries are moved into `## x.y.z` sections that match the gem versio
 
 ## Unreleased
 
+- Removes an unused filtering metadata keyword argument from the schedule DSL.
+
 ## 0.2.0
 
 - Adds `wheneverd linger enable|disable|status` for managing systemd user lingering via `loginctl`.

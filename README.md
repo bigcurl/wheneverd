@@ -2,15 +2,17 @@
 
 Wheneverd is to systemd timers what the [`whenever` gem](https://github.com/javan/whenever) is to cron.
 
-Tagline / repo: `git@github.com:bigcurl/wheneverd.git`
-
 ## Status
 
-Working end-to-end: schedule DSL loading, systemd unit rendering, and safe unit write/list/delete are implemented, along with a CLI for `init`, `show`, `write`, `delete`, `activate`, `deactivate`, `reload`, and `current`.
+Pre-1.0, but working end-to-end for user systemd timers:
 
-Known limitations: `roles:` is accepted but not used for filtering yet.
+- Loads a Ruby schedule DSL file (default: `config/schedule.rb`).
+- Renders systemd `.service`/`.timer` units (interval, calendar, and 5-field cron schedules).
+- Writes, lists, and deletes generated unit files (default: `~/.config/systemd/user`).
+- Enables/starts/stops/disables/restarts timers via `systemctl --user`.
+- Manages lingering via `loginctl` (so timers can run while logged out).
 
-See `FEATURE_SUMMARY.md` for high-level user-visible behavior, and `CHANGELOG.md` for release notes.
+See `FEATURE_SUMMARY.md` for user-visible behavior, and `CHANGELOG.md` for release notes.
 
 ## Installation
 
@@ -38,7 +40,7 @@ wheneverd activate
 wheneverd deactivate
 wheneverd reload
 wheneverd current
-wheneverd linger status
+wheneverd linger
 ```
 
 ### Minimal `config/schedule.rb` example
@@ -120,7 +122,7 @@ Note: schedule files are executed as Ruby. Do not run untrusted schedule code.
 The core shape is:
 
 ```ruby
-every(period, at: nil, roles: nil) do
+every(period, at: nil) do
   command "echo hello"
 end
 ```
@@ -185,10 +187,6 @@ Cron translation supports standard 5-field crontab strings (`minute hour day-of-
 
 Unsupported cron patterns raise an error at render time (e.g. non-5-field strings, `@daily`, `L`, `W`, `#`, `?`).
 
-### `roles:`
-
-`roles:` is accepted and stored on entries, but is ignored in v1 (no role-based filtering yet).
-
 ## CLI
 
 Defaults:
@@ -204,17 +202,19 @@ Notes:
 - Identifiers are sanitized for use in unit file names (non-alphanumeric characters become `-`).
 - Unit basenames include a stable ID derived from the job’s trigger + command (reordering schedule blocks won’t rename units).
 - `wheneverd write` / `wheneverd reload` prune previously generated units for the identifier by default (use `--no-prune` to keep old units around).
+- `--unit-dir` controls where unit files are written/read/deleted; `activate`/`deactivate` use systemd’s unit search path.
 
 Commands:
 
 - `wheneverd init [--schedule PATH] [--force]` writes a template schedule file.
 - `wheneverd show [--schedule PATH] [--identifier NAME]` prints rendered units to stdout.
-- `wheneverd write [--dry-run] [--unit-dir PATH] [--[no-]prune]` writes units to disk (or prints paths in `--dry-run` mode).
-- `wheneverd delete [--dry-run] [--unit-dir PATH]` deletes previously generated units for the identifier.
+- `wheneverd write [--schedule PATH] [--identifier NAME] [--unit-dir PATH] [--dry-run] [--[no-]prune]` writes units to disk (or prints paths in `--dry-run` mode).
+- `wheneverd delete [--identifier NAME] [--unit-dir PATH] [--dry-run]` deletes previously generated units for the identifier.
 - `wheneverd activate [--schedule PATH] [--identifier NAME]` runs `systemctl --user daemon-reload` and enables/starts the timers.
 - `wheneverd deactivate [--schedule PATH] [--identifier NAME]` stops and disables the timers.
 - `wheneverd reload [--schedule PATH] [--identifier NAME] [--unit-dir PATH] [--[no-]prune]` writes units, reloads systemd, and restarts timers.
 - `wheneverd current [--identifier NAME] [--unit-dir PATH]` prints the currently installed unit file contents from disk.
+- `wheneverd linger [--user NAME] [enable|disable|status]` manages lingering via `loginctl` (`status` is the default).
 
 ## Development
 

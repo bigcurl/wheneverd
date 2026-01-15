@@ -13,18 +13,18 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 ## Unreleased
 
 - Adds `wheneverd linger enable|disable|status` for managing systemd user lingering via `loginctl`.
+- Removes an unused filtering metadata keyword argument from the schedule DSL.
 
 ## 0.2.0
 
 - The `wheneverd` CLI is implemented using Clamp (`--help`, usage errors in `ERROR: ...` format, `--verbose` for details).
 - The gem includes a small “whenever-like” domain model (interval parsing, durations, triggers, schedules).
 - The gem can load a Ruby schedule DSL file via `Wheneverd::DSL::Loader.load_file`.
-- Schedule DSL supports `every(period, at: ..., roles: ...) { command("...") }` entries (multiple `command` calls per entry).
+- Schedule DSL supports `every(period, at: ...) { command("...") }` entries (multiple `command` calls per entry).
 - Schedule DSL supports multiple calendar period symbols per `every` block (e.g. `every :tuesday, :wednesday`).
 - Supported `every` periods include interval strings/durations, calendar shortcuts (`:hour`, `:day`, `:month`, `:year`),
   day selectors (`:monday..:sunday`, `:weekday`, `:weekend`), and standard 5-field cron strings.
 - `at:` supports a string or an array of strings (for calendar schedules), like `"4:30 am"` or `"00:15"`.
-- `roles:` is accepted and stored on entries, but is not used for filtering yet.
 - The gem can render systemd `.service` and `.timer` units via `Wheneverd::Systemd::Renderer.render`.
 - Generated unit basenames include a stable ID derived from the job’s trigger + command (reordering schedule blocks won’t rename units).
 - Interval timers include both `OnActiveSec=` and `OnUnitActiveSec=` to ensure a newly started timer has a next run scheduled.

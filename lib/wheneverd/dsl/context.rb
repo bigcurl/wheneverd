@@ -25,16 +25,15 @@ module Wheneverd
       #
       # @param periods [Array<String, Symbol, Wheneverd::Duration, Array<Symbol>>]
       # @param at [String, Array<String>, nil]
-      # @param roles [Object] stored but currently not used for filtering
       # @return [Wheneverd::Entry]
-      def every(*periods, at: nil, roles: nil, &block)
+      def every(*periods, at: nil, &block)
         raise InvalidPeriodError.new("every() requires a block", path: path) unless block
 
         raise InvalidPeriodError.new("every() requires a period", path: path) if periods.empty?
 
         period = periods.length == 1 ? periods.first : periods
         trigger = @period_parser.trigger_for(period, at: at)
-        entry = Wheneverd::Entry.new(trigger: trigger, roles: roles)
+        entry = Wheneverd::Entry.new(trigger: trigger)
 
         schedule.add_entry(entry)
 
