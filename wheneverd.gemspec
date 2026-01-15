@@ -5,7 +5,7 @@ require_relative "lib/wheneverd/version"
 Gem::Specification.new do |spec|
   spec.name = "wheneverd"
   spec.version = Wheneverd::VERSION
-  spec.authors = ["bigcurl"]
+  spec.authors = ["Dr. Samuel Goebert"]
   spec.email = ["maintainers@example.com"]
 
   spec.summary = "Wheneverd is to systemd timers what whenever is to cron."
