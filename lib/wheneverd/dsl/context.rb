@@ -12,9 +12,12 @@ module Wheneverd
         @period_parser = Wheneverd::DSL::PeriodParser.new(path: path)
       end
 
-      def every(period, at: nil, roles: nil, &block)
+      def every(*periods, at: nil, roles: nil, &block)
         raise InvalidPeriodError.new("every() requires a block", path: path) unless block
 
+        raise InvalidPeriodError.new("every() requires a period", path: path) if periods.empty?
+
+        period = periods.length == 1 ? periods.first : periods
         trigger = @period_parser.trigger_for(period, at: at)
         entry = Wheneverd::Entry.new(trigger: trigger, roles: roles)
 

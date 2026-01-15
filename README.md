@@ -6,7 +6,9 @@ Tagline / repo: `git@github.com:bigcurl/wheneverd.git`
 
 ## Status
 
-Early scaffold: DSL loading, systemd rendering, and safe unit write/delete are implemented, with a CLI for `init`, `show`, `write`, and `delete`.
+Working end-to-end: schedule DSL loading, systemd unit rendering, and safe unit write/list/delete are implemented, along with a CLI for `init`, `show`, `write`, `delete`, `activate`, `deactivate`, `reload`, and `current`.
+
+Known limitations: cron translation supports a small subset; `roles:` is accepted but not used for filtering yet.
 
 See `FEATURE_SUMMARY.md` for high-level user-visible behavior, and `CHANGELOG.md` for release notes (once versioned releases begin).
 
@@ -91,6 +93,14 @@ every(period, at: nil, roles: nil) do
 end
 ```
 
+For calendar schedules, you can also pass multiple period symbols (or an array) to run the same jobs on multiple days:
+
+```ruby
+every :tuesday, :wednesday, at: "12pm" do
+  command "echo midweek"
+end
+```
+
 ### `command`
 
 `command("...")` appends a oneshot `ExecStart=` job. Commands must be non-empty strings.
@@ -103,7 +113,7 @@ Supported `period` forms:
 - Duration objects: `1.second`, `1.minute`, `1.hour`, `1.day`, `1.week` (and plurals), using the same interval semantics.
 - Symbol shortcuts:
   - `:hour`, `:day`, `:month`, `:year` (calendar schedules, mapped to `hourly`, `daily`, `monthly`, `yearly`)
-- Day selectors: `:monday..:sunday`, plus `:weekday` and `:weekend` (calendar schedules).
+- Day selectors: `:monday..:sunday`, plus `:weekday` and `:weekend` (calendar schedules; multiple day symbols supported).
 - Cron strings (5 fields), like `"0 0 27-31 * *"` (calendar schedules).
 
 ### `at:` times
@@ -138,6 +148,11 @@ Defaults:
 - schedule path: `config/schedule.rb` (override with `--schedule PATH`)
 - identifier: current directory name (override with `--identifier NAME`)
 - unit dir: `~/.config/systemd/user` (override with `--unit-dir PATH`)
+
+Notes:
+
+- Errors use Clamp-style `ERROR: ...` formatting; add `--verbose` to include error details.
+- `wheneverd delete` / `wheneverd current` only operate on units matching the identifier *and* the generated marker line.
 
 Commands:
 

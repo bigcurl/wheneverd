@@ -15,7 +15,7 @@ module Wheneverd
       # - interval strings: "5m", "1h", "2d"
       # - duration objects: 1.day, 2.hours
       # - symbol shortcuts: :hour, :day, :month, :year
-      # - day selectors: :sunday, :weekday, :weekend (use `at:` for specific times)
+      # - day selectors: :monday..:sunday, :weekday, :weekend (multiple day symbols supported)
       # - cron strings (5 fields): "0 0 27-31 * *" (limited subset)
 
       every "5m" do
@@ -36,6 +36,10 @@ module Wheneverd
 
       every :sunday, at: "12pm" do
         command "echo weekly"
+      end
+
+      every :tuesday, :wednesday, at: "12pm" do
+        command "echo midweek"
       end
 
       every "0 0 27-31 * *" do

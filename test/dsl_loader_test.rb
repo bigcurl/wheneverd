@@ -156,6 +156,44 @@ class DSLLoaderSymbolPeriodsTest < Minitest::Test
     entry = schedule.entries.fetch(0)
     assert_equal ["weekend"], entry.trigger.on_calendar
   end
+
+  def test_loads_multiple_day_symbols_as_calendar_trigger
+    schedule = load_schedule(<<~RUBY)
+      every :tuesday, :wednesday, at: "12pm" do
+        command "echo midweek"
+      end
+    RUBY
+
+    entry = schedule.entries.fetch(0)
+    assert_instance_of Wheneverd::Trigger::Calendar, entry.trigger
+    assert_equal ["tuesday@12pm", "wednesday@12pm"], entry.trigger.on_calendar
+  end
+
+  def test_loads_period_symbol_array_as_calendar_trigger
+    schedule = load_schedule(<<~RUBY)
+      every %i[tuesday wednesday], at: "12pm" do
+        command "echo midweek"
+      end
+    RUBY
+
+    entry = schedule.entries.fetch(0)
+    assert_instance_of Wheneverd::Trigger::Calendar, entry.trigger
+    assert_equal ["tuesday@12pm", "wednesday@12pm"], entry.trigger.on_calendar
+  end
+
+  def test_loads_multiple_day_symbols_with_at_array_as_calendar_trigger
+    entry = load_schedule(<<~RUBY).entries.fetch(0)
+      every :tuesday, :wednesday, at: ["4:30 am", "6:00 pm"] do
+        command "echo twice_midweek"
+      end
+    RUBY
+
+    assert_instance_of Wheneverd::Trigger::Calendar, entry.trigger
+    assert_equal(
+      ["tuesday@4:30 am", "tuesday@6:00 pm", "wednesday@4:30 am", "wednesday@6:00 pm"],
+      entry.trigger.on_calendar
+    )
+  end
 end
 
 class DSLLoaderPeriodErrorsTest < Minitest::Test

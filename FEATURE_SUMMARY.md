@@ -12,10 +12,11 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 
 ## Unreleased
 
-- The `wheneverd` CLI is implemented using the Clamp gem (help/usage and errors follow Clamp defaults).
+- The `wheneverd` CLI is implemented using Clamp (`--help`, usage errors in `ERROR: ...` format, `--verbose` for details).
 - The gem includes a small “whenever-like” domain model (interval parsing, durations, triggers, schedules).
 - The gem can load a Ruby schedule DSL file via `Wheneverd::DSL::Loader.load_file`.
 - Schedule DSL supports `every(period, at: ..., roles: ...) { command("...") }` entries (multiple `command` calls per entry).
+- Schedule DSL supports multiple calendar period symbols per `every` block (e.g. `every :tuesday, :wednesday`).
 - Supported `every` periods include interval strings/durations, calendar shortcuts (`:hour`, `:day`, `:month`, `:year`),
   day selectors (`:monday..:sunday`, `:weekday`, `:weekend`), and a limited subset of 5-field cron strings.
 - `at:` supports a string or an array of strings (for calendar schedules), like `"4:30 am"` or `"00:15"`.
@@ -25,5 +26,6 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 - The `wheneverd` CLI supports `init`, `show`, `write`, `delete`, `activate`, `deactivate`, and `reload` for working with
   schedule files, unit directories, and managing user timers via `systemctl --user`.
 - The `wheneverd current` command prints the currently installed unit file contents from disk for an identifier.
+- The `wheneverd delete` / `wheneverd current` commands only operate on units matching the identifier and generated marker.
 - `wheneverd init` prints whether it wrote or overwrote the schedule template.
 - Using `every :reboot` raises an error (the `:reboot` period shortcut is not supported).

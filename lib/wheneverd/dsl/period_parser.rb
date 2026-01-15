@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "calendar_symbol_period_list"
+
 module Wheneverd
   module DSL
     class PeriodParser
@@ -8,19 +10,8 @@ module Wheneverd
         "The :reboot period is not supported; use an interval or calendar period instead"
 
       CALENDAR_SYMBOLS = %i[
-        hour
-        day
-        month
-        year
-        weekday
-        weekend
-        monday
-        tuesday
-        wednesday
-        thursday
-        friday
-        saturday
-        sunday
+        hour day month year weekday weekend
+        monday tuesday wednesday thursday friday saturday sunday
       ].freeze
 
       attr_reader :path
@@ -39,16 +30,12 @@ module Wheneverd
       private
 
       def trigger_for_period(period, at_times:)
-        case period
-        when Wheneverd::Duration
-          duration_trigger_for(period, at_times: at_times)
-        when String
-          string_trigger_for(period, at_times: at_times)
-        when Symbol
-          symbol_trigger_for(period, at_times: at_times)
-        else
-          raise InvalidPeriodError.new("Unsupported period type: #{period.class}", path: path)
-        end
+        return duration_trigger_for(period, at_times: at_times) if period.is_a?(Wheneverd::Duration)
+        return array_trigger_for(period, at_times: at_times) if period.is_a?(Array)
+        return string_trigger_for(period, at_times: at_times) if period.is_a?(String)
+        return symbol_trigger_for(period, at_times: at_times) if period.is_a?(Symbol)
+
+        raise InvalidPeriodError.new("Unsupported period type: #{period.class}", path: path)
       end
 
       def duration_trigger_for(duration, at_times:)
@@ -102,6 +89,16 @@ module Wheneverd
         end
 
         raise InvalidPeriodError.new("Unknown period symbol: #{sym.inspect}", path: path)
+      end
+
+      def array_trigger_for(periods, at_times:)
+        bases = CalendarSymbolPeriodList.validate(
+          periods,
+          allowed_symbols: CALENDAR_SYMBOLS,
+          path: path
+        ).map(&:to_s)
+        specs = bases.flat_map { |base| build_calendar_specs(base, at_times) }.uniq
+        Wheneverd::Trigger::Calendar.new(on_calendar: specs)
       end
 
       def build_calendar_specs(base, at_times)
