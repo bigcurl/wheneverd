@@ -84,7 +84,7 @@ module Wheneverd
       def self.timer_lines_for(trigger)
         case trigger
         when Wheneverd::Trigger::Interval
-          ["OnUnitActiveSec=#{trigger.seconds}"]
+          ["OnActiveSec=#{trigger.seconds}", "OnUnitActiveSec=#{trigger.seconds}"]
         when Wheneverd::Trigger::Boot
           ["OnBootSec=#{trigger.seconds}"]
         when Wheneverd::Trigger::Calendar

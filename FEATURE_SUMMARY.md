@@ -22,6 +22,7 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 - `at:` supports a string or an array of strings (for calendar schedules), like `"4:30 am"` or `"00:15"`.
 - `roles:` is accepted and stored on entries, but is not used for filtering yet.
 - The gem can render systemd `.service` and `.timer` units via `Wheneverd::Systemd::Renderer.render`.
+- Interval timers include both `OnActiveSec=` and `OnUnitActiveSec=` to ensure a newly started timer has a next run scheduled.
 - The gem can write/delete generated unit files via `Wheneverd::Systemd::UnitWriter` and `Wheneverd::Systemd::UnitDeleter`.
 - The `wheneverd` CLI supports `init`, `show`, `write`, `delete`, `activate`, `deactivate`, and `reload` for working with
   schedule files, unit directories, and managing user timers via `systemctl --user`.

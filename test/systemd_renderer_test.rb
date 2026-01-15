@@ -49,6 +49,7 @@ class SystemdRendererIntervalTest < Minitest::Test
     timer = timer_for(interval_entry(seconds: 60, command: "echo hello"))
     refute_nil timer
     assert_includes timer.contents, marker
+    assert_includes timer.contents, "OnActiveSec=60"
     assert_includes timer.contents, "OnUnitActiveSec=60"
     assert_includes timer.contents, "Persistent=true"
     assert_includes timer.contents, "WantedBy=timers.target"

@@ -118,7 +118,7 @@ command "/bin/bash -lc 'echo hello | sed -e s/hello/hi/'"
 
 Supported `period` forms:
 
-- Interval strings: `"<n>s|m|h|d|w"` (examples: `"5m"`, `"1h"`) for monotonic timers (`OnUnitActiveSec=`).
+- Interval strings: `"<n>s|m|h|d|w"` (examples: `"5m"`, `"1h"`) for monotonic timers (`OnActiveSec=` + `OnUnitActiveSec=`).
 - Duration objects: `1.second`, `1.minute`, `1.hour`, `1.day`, `1.week` (and plurals), using the same interval semantics.
 - Symbol shortcuts:
   - `:hour`, `:day`, `:month`, `:year` (calendar schedules, mapped to `hourly`, `daily`, `monthly`, `yearly`)

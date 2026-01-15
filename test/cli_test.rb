@@ -109,6 +109,14 @@ end
 class CLIShowTest < Minitest::Test
   include CLITestHelpers
 
+  EXPECTED_SHOW_OUTPUT_SNIPPETS = [
+    "OnActiveSec=300",
+    "OnUnitActiveSec=300",
+    "OnCalendar=hourly",
+    "OnCalendar=*-*-27..31 00:00:00",
+    "ExecStart=echo hello"
+  ].freeze
+
   def test_show_renders_units_to_stdout
     with_project_dir do
       assert_equal 0, run_cli(["init"]).first
@@ -116,10 +124,7 @@ class CLIShowTest < Minitest::Test
 
       assert_equal 0, status
       assert_equal "", err
-      assert_includes out, "OnUnitActiveSec=300"
-      assert_includes out, "OnCalendar=hourly"
-      assert_includes out, "OnCalendar=*-*-27..31 00:00:00"
-      assert_includes out, "ExecStart=echo hello"
+      EXPECTED_SHOW_OUTPUT_SNIPPETS.each { |expected| assert_includes out, expected }
     end
   end
 

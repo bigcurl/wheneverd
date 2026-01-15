@@ -66,7 +66,7 @@ class DomainModelTest < Minitest::Test
 
   def test_triggers_render_timer_lines
     interval = Wheneverd::Trigger::Interval.new(seconds: 60)
-    assert_equal ["OnUnitActiveSec=60"], interval.systemd_timer_lines
+    assert_equal ["OnActiveSec=60", "OnUnitActiveSec=60"], interval.systemd_timer_lines
 
     boot = Wheneverd::Trigger::Boot.new(seconds: 5)
     assert_equal ["OnBootSec=5"], boot.systemd_timer_lines

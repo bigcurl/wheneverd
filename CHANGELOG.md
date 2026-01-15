@@ -10,6 +10,7 @@ Once releases begin, entries will be moved into `## x.y.z` sections that match t
 - Adds a Ruby DSL loader (`Wheneverd::DSL::Loader.load_file`) supporting `every(...)` blocks with `command(...)` jobs.
 - Schedule DSL: `every` accepts multiple calendar period symbols in one block (e.g. `every :tuesday, :wednesday`).
 - Adds systemd unit rendering (`Wheneverd::Systemd::Renderer.render`) for interval and calendar triggers.
+- Interval timers now include both `OnActiveSec=` and `OnUnitActiveSec=` so newly enabled timers have a next run scheduled.
 - Adds helpers to write and delete generated unit files (`Wheneverd::Systemd::UnitWriter`/`UnitDeleter`).
 - Adds CLI subcommands: `init`, `show`, `write`, `delete`, `activate`, `deactivate`, `reload`, and `current`.
 - `wheneverd init` prints whether it wrote or overwrote the schedule template.

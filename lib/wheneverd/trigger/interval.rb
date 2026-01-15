@@ -2,7 +2,11 @@
 
 module Wheneverd
   module Trigger
-    # A monotonic interval trigger, rendered as `OnUnitActiveSec=`.
+    # A monotonic interval trigger for `systemd` timers.
+    #
+    # We emit both:
+    # - `OnActiveSec=` to schedule the first run relative to timer activation.
+    # - `OnUnitActiveSec=` to schedule subsequent runs relative to the last run.
     class Interval
       # @return [Integer]
       attr_reader :seconds
@@ -19,7 +23,7 @@ module Wheneverd
 
       # @return [Array<String>] systemd `[Timer]` lines for this trigger
       def systemd_timer_lines
-        ["OnUnitActiveSec=#{seconds}"]
+        ["OnActiveSec=#{seconds}", "OnUnitActiveSec=#{seconds}"]
       end
     end
   end

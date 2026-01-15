@@ -31,6 +31,7 @@ class CLIEndToEndTest < Minitest::Test
     status, out, err = run_exe(["show", "--identifier", "demo"], chdir: project_dir)
     assert_equal 0, status
     assert_equal "", err
+    assert_includes out, "OnActiveSec=300"
     assert_includes out, "OnUnitActiveSec=300"
     assert_includes out, "ExecStart=echo hello"
   end
@@ -76,6 +77,7 @@ class CLIEndToEndTest < Minitest::Test
   def assert_timer_unit_contents(unit_dir)
     timer_contents = File.read(File.join(unit_dir, "wheneverd-demo-e0-j0.timer"))
     assert_includes timer_contents, Wheneverd::Systemd::Renderer::MARKER_PREFIX
+    assert_includes timer_contents, "OnActiveSec=300"
     assert_includes timer_contents, "OnUnitActiveSec=300"
   end
 end
