@@ -220,6 +220,10 @@ Commands:
 
 ```bash
 bundle install
+
+# Run the CLI from this repo:
+bundle exec exe/wheneverd --help
+
 bundle exec rake test
 bundle exec rake ci
 bundle exec rake yard

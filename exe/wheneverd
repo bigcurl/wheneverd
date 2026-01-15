@@ -1,9 +1,24 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+begin
+  require "bundler/setup"
+rescue LoadError
+  # Allow running without Bundler (e.g., when installed as a gem).
+end
+
 lib = File.expand_path("../lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require "wheneverd/cli"
+begin
+  require "wheneverd/cli"
+rescue LoadError => e
+  if e.message.include?("clamp")
+    warn "ERROR: missing gem dependency `clamp`."
+    warn "Run `bundle install` and then `bundle exec exe/wheneverd ...`."
+    exit 1
+  end
+  raise
+end
 
 exit(Wheneverd::CLI.run || 0)
