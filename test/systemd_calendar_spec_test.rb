@@ -36,4 +36,10 @@ class SystemdCalendarSpecTest < Minitest::Test
       Wheneverd::Systemd::CalendarSpec.to_on_calendar("hour@12pm")
     end
   end
+
+  def test_rejects_calendar_specs_that_expand_to_multiple_on_calendar_values
+    assert_raises(Wheneverd::Systemd::InvalidCalendarSpecError) do
+      Wheneverd::Systemd::CalendarSpec.to_on_calendar("cron:0 0 1 * Mon")
+    end
+  end
 end

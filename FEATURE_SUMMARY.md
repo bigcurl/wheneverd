@@ -18,15 +18,17 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 - Schedule DSL supports `every(period, at: ..., roles: ...) { command("...") }` entries (multiple `command` calls per entry).
 - Schedule DSL supports multiple calendar period symbols per `every` block (e.g. `every :tuesday, :wednesday`).
 - Supported `every` periods include interval strings/durations, calendar shortcuts (`:hour`, `:day`, `:month`, `:year`),
-  day selectors (`:monday..:sunday`, `:weekday`, `:weekend`), and a limited subset of 5-field cron strings.
+  day selectors (`:monday..:sunday`, `:weekday`, `:weekend`), and standard 5-field cron strings.
 - `at:` supports a string or an array of strings (for calendar schedules), like `"4:30 am"` or `"00:15"`.
 - `roles:` is accepted and stored on entries, but is not used for filtering yet.
 - The gem can render systemd `.service` and `.timer` units via `Wheneverd::Systemd::Renderer.render`.
+- Generated unit basenames include a stable ID derived from the job’s trigger + command (reordering schedule blocks won’t rename units).
 - Interval timers include both `OnActiveSec=` and `OnUnitActiveSec=` to ensure a newly started timer has a next run scheduled.
 - The gem can write/delete generated unit files via `Wheneverd::Systemd::UnitWriter` and `Wheneverd::Systemd::UnitDeleter`.
 - The `wheneverd` CLI supports `init`, `show`, `write`, `delete`, `activate`, `deactivate`, and `reload` for working with
   schedule files, unit directories, and managing user timers via `systemctl --user`.
+- `wheneverd write` / `wheneverd reload` prune previously generated units for the identifier by default (use `--no-prune` to disable pruning).
 - The `wheneverd current` command prints the currently installed unit file contents from disk for an identifier.
 - The `wheneverd delete` / `wheneverd current` commands only operate on units matching the identifier and generated marker.
 - `wheneverd init` prints whether it wrote or overwrote the schedule template.
-- Using `every :reboot` raises an error (the `:reboot` period shortcut is not supported).
+- Schedule DSL supports `every :reboot` as a boot trigger (rendered as `OnBootSec=1`).

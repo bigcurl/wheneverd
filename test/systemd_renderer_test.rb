@@ -86,6 +86,12 @@ class SystemdRendererCalendarTest < Minitest::Test
     timer = timer_for(calendar_entry(spec: "cron:0 0 27-31 * *", command: "echo raw_cron"))
     assert_includes timer.contents, "OnCalendar=*-*-27..31 00:00:00"
   end
+
+  def test_cron_with_day_of_month_and_day_of_week_expands_to_multiple_on_calendar_lines
+    timer = timer_for(calendar_entry(spec: "cron:0 0 1 * Mon", command: "echo raw_cron"))
+    assert_includes timer.contents, "OnCalendar=Mon *-*-* 00:00:00"
+    assert_includes timer.contents, "OnCalendar=*-*-1 00:00:00"
+  end
 end
 
 class SystemdRendererNamingTest < Minitest::Test
@@ -97,15 +103,6 @@ class SystemdRendererNamingTest < Minitest::Test
     units2 = render_units(entries, identifier: "my-app")
     assert_equal units1.map(&:path_basename), units2.map(&:path_basename)
     assert_equal units1.map(&:contents), units2.map(&:contents)
-  end
-
-  def test_naming_includes_entry_and_job_indices
-    entry = Wheneverd::Entry.new(trigger: Wheneverd::Trigger::Interval.new(seconds: 60),
-                                 jobs: jobs_a_b)
-    basenames = render_units([entry], identifier: "my-app").map(&:path_basename)
-
-    assert_includes basenames, "wheneverd-my-app-e0-j0.timer"
-    assert_includes basenames, "wheneverd-my-app-e0-j1.service"
   end
 
   private

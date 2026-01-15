@@ -87,13 +87,18 @@ module Wheneverd
           ["OnActiveSec=#{trigger.seconds}", "OnUnitActiveSec=#{trigger.seconds}"]
         when Wheneverd::Trigger::Boot
           ["OnBootSec=#{trigger.seconds}"]
-        when Wheneverd::Trigger::Calendar
-          trigger.on_calendar.map { |spec| "OnCalendar=#{CalendarSpec.to_on_calendar(spec)}" }
-        else
-          raise ArgumentError, "Unsupported trigger type: #{trigger.class}"
+        when Wheneverd::Trigger::Calendar then calendar_timer_lines(trigger)
+        else raise ArgumentError, "Unsupported trigger type: #{trigger.class}"
         end
       end
       private_class_method :timer_lines_for
+
+      def self.calendar_timer_lines(trigger)
+        trigger.on_calendar.flat_map do |spec|
+          CalendarSpec.to_on_calendar_values(spec).map { |value| "OnCalendar=#{value}" }
+        end
+      end
+      private_class_method :calendar_timer_lines
 
       def self.service_contents(path_basename, command)
         ([

@@ -8,7 +8,7 @@ Tagline / repo: `git@github.com:bigcurl/wheneverd.git`
 
 Working end-to-end: schedule DSL loading, systemd unit rendering, and safe unit write/list/delete are implemented, along with a CLI for `init`, `show`, `write`, `delete`, `activate`, `deactivate`, `reload`, and `current`.
 
-Known limitations: cron translation supports a small subset; `roles:` is accepted but not used for filtering yet.
+Known limitations: `roles:` is accepted but not used for filtering yet.
 
 See `FEATURE_SUMMARY.md` for high-level user-visible behavior, and `CHANGELOG.md` for release notes (once versioned releases begin).
 
@@ -122,6 +122,7 @@ Supported `period` forms:
 - Duration objects: `1.second`, `1.minute`, `1.hour`, `1.day`, `1.week` (and plurals), using the same interval semantics.
 - Symbol shortcuts:
   - `:hour`, `:day`, `:month`, `:year` (calendar schedules, mapped to `hourly`, `daily`, `monthly`, `yearly`)
+- `:reboot` (boot trigger, mapped to `OnBootSec=1`).
 - Day selectors: `:monday..:sunday`, plus `:weekday` and `:weekend` (calendar schedules; multiple day symbols supported).
 - Cron strings (5 fields), like `"0 0 27-31 * *"` (calendar schedules).
 
@@ -131,6 +132,7 @@ Notes:
   based. In particular, `every 1.day` is monotonic, but `every :day` is calendar-based.
 - `at:` is only supported with calendar periods. `every 1.day, at: ...` is supported as a convenience and is treated
   as a daily calendar trigger.
+- `at:` is not supported with `every :reboot`.
 
 ### `at:` times
 
@@ -143,17 +145,15 @@ Accepted examples:
 - `"4:30 am"`, `"6:00 pm"`, `"12pm"`
 - `"00:15"` (24h)
 
-### Cron limitations
+### Cron strings
 
-Cron translation supports a limited subset:
+Cron translation supports standard 5-field crontab strings (`minute hour day-of-month month day-of-week`), including:
 
-- minute: number (`0..59`)
-- hour: number (`0..23`)
-- day-of-month: `*`, a number (`1..31`), or a simple range (`27-31`)
-- month: must be `*`
-- day-of-week: must be `*`
+- Wildcards, lists, ranges, and steps (`*`, `1,2,3`, `1-5`, `*/15`, `1-10/2`)
+- Month and day-of-week names (`Jan`, `Mon`)
+- Cron day-of-month vs day-of-week OR semantics (may expand into multiple `OnCalendar=` lines)
 
-Unsupported cron patterns raise an error at render time.
+Unsupported cron patterns raise an error at render time (e.g. non-5-field strings, `@daily`, `L`, `W`, `#`, `?`).
 
 ### `roles:`
 
@@ -172,16 +172,18 @@ Notes:
 - Errors use Clamp-style `ERROR: ...` formatting; add `--verbose` to include error details.
 - `wheneverd delete` / `wheneverd current` only operate on units matching the identifier *and* the generated marker line.
 - Identifiers are sanitized for use in unit file names (non-alphanumeric characters become `-`).
+- Unit basenames include a stable ID derived from the job’s trigger + command (reordering schedule blocks won’t rename units).
+- `wheneverd write` / `wheneverd reload` prune previously generated units for the identifier by default (use `--no-prune` to keep old units around).
 
 Commands:
 
 - `wheneverd init [--schedule PATH] [--force]` writes a template schedule file.
 - `wheneverd show [--schedule PATH] [--identifier NAME]` prints rendered units to stdout.
-- `wheneverd write [--dry-run] [--unit-dir PATH]` writes units to disk (or prints paths in `--dry-run` mode).
+- `wheneverd write [--dry-run] [--unit-dir PATH] [--[no-]prune]` writes units to disk (or prints paths in `--dry-run` mode).
 - `wheneverd delete [--dry-run] [--unit-dir PATH]` deletes previously generated units for the identifier.
 - `wheneverd activate [--schedule PATH] [--identifier NAME]` runs `systemctl --user daemon-reload` and enables/starts the timers.
 - `wheneverd deactivate [--schedule PATH] [--identifier NAME]` stops and disables the timers.
-- `wheneverd reload [--schedule PATH] [--identifier NAME] [--unit-dir PATH]` writes units, reloads systemd, and restarts timers.
+- `wheneverd reload [--schedule PATH] [--identifier NAME] [--unit-dir PATH] [--[no-]prune]` writes units, reloads systemd, and restarts timers.
 - `wheneverd current [--identifier NAME] [--unit-dir PATH]` prints the currently installed unit file contents from disk.
 
 ## Development

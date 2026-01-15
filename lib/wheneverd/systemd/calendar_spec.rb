@@ -36,17 +36,35 @@ module Wheneverd
       # @return [String]
       # @raise [Wheneverd::Systemd::InvalidCalendarSpecError]
       def self.to_on_calendar(spec)
+        values = to_on_calendar_values(spec)
+        return values.fetch(0) if values.length == 1
+
+        message =
+          "Invalid calendar spec: #{spec.to_s.strip.inspect} " \
+          "expands to multiple OnCalendar values"
+        raise InvalidCalendarSpecError, message
+      end
+
+      # Convert a calendar spec into one or more systemd `OnCalendar=` values.
+      #
+      # Some inputs (e.g., certain cron expressions) may require multiple `OnCalendar=` entries
+      # to preserve semantics.
+      #
+      # @param spec [String]
+      # @return [Array<String>]
+      # @raise [Wheneverd::Systemd::InvalidCalendarSpecError]
+      def self.to_on_calendar_values(spec)
         input = spec.to_s.strip
         raise InvalidCalendarSpecError, "Invalid calendar spec: empty" if input.empty?
 
-        return cron_to_on_calendar(input) if input.start_with?("cron:")
+        return cron_to_on_calendar_values(input) if input.start_with?("cron:")
 
         base, at = input.split("@", 2)
         base = base.strip
 
         raise InvalidCalendarSpecError, "Invalid calendar spec: #{input.inspect}" if base.empty?
 
-        translate_base_with_optional_at(base, at)
+        [translate_base_with_optional_at(base, at)]
       end
 
       def self.translate_base_with_optional_at(base, at)
@@ -64,11 +82,11 @@ module Wheneverd
       end
       private_class_method :base_to_systemd
 
-      def self.cron_to_on_calendar(input)
+      def self.cron_to_on_calendar_values(input)
         cron = input.delete_prefix("cron:")
-        Wheneverd::Systemd::CronParser.to_on_calendar(cron)
+        Wheneverd::Systemd::CronParser.to_on_calendar_values(cron)
       end
-      private_class_method :cron_to_on_calendar
+      private_class_method :cron_to_on_calendar_values
 
       def self.time_prefix_for_at(base)
         return PREFIXES.fetch(base) if PREFIXES.key?(base)

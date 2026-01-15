@@ -17,7 +17,7 @@ module Wheneverd
       # - duration objects: 1.day, 2.hours
       # - symbol shortcuts: :hour, :day, :month, :year
       # - day selectors: :monday..:sunday, :weekday, :weekend (multiple day symbols supported)
-      # - cron strings (5 fields): "0 0 27-31 * *" (limited subset)
+      # - cron strings (5 fields): "0 0 27-31 * *"
 
       every "5m" do
         command "echo hello"
