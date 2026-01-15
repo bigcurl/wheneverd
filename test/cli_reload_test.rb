@@ -19,7 +19,7 @@ class CLIReloadSuccessTest < Minitest::Test
       unit_dir = File.join(project_dir, "tmp_units")
       status, _out, err, _calls = run_reload_with_capture3_stub(unit_dir: unit_dir)
       assert_cli_success(status, err)
-      assert File.exist?(File.join(unit_dir, "wheneverd-demo-e0-j0.timer"))
+      assert File.exist?(File.join(unit_dir, expected_timer_basenames.fetch(0)))
     end
   end
 
@@ -38,7 +38,7 @@ class CLIReloadSuccessTest < Minitest::Test
       status, _out, err, calls = run_reload_with_capture3_stub(unit_dir: unit_dir)
       assert_cli_success(status, err)
       assert_systemctl_call_starts_with(calls, 1, SYSTEMCTL_USER_PREFIX + ["restart"],
-                                        includes: "wheneverd-demo-e5-j0.timer")
+                                        includes: expected_timer_basenames)
     end
   end
 end
@@ -126,7 +126,7 @@ class CLIReloadSystemctlFailureTest < Minitest::Test
     with_inited_project_dir do |project_dir|
       unit_dir = File.join(project_dir, "tmp_units")
       run_reload_with_capture3_stub(unit_dir: unit_dir, exitstatus: 1, stderr: "no bus\n")
-      assert File.exist?(File.join(unit_dir, "wheneverd-demo-e0-j0.timer"))
+      assert File.exist?(File.join(unit_dir, expected_timer_basenames.fetch(0)))
     end
   end
 end

@@ -17,7 +17,7 @@ class CLIDeactivateSuccessTest < Minitest::Test
     with_inited_project_dir do
       status, out, err, _calls = run_deactivate_with_capture3_stub
       assert_cli_success(status, err)
-      assert_includes out, "wheneverd-demo-e0-j0.timer"
+      assert_includes out, expected_timer_basenames.fetch(0)
     end
   end
 
@@ -26,7 +26,7 @@ class CLIDeactivateSuccessTest < Minitest::Test
       status, _out, err, calls = run_deactivate_with_capture3_stub
       assert_cli_success(status, err)
       assert_systemctl_call_starts_with(calls, 0, SYSTEMCTL_USER_PREFIX + ["stop"],
-                                        includes: "wheneverd-demo-e5-j0.timer")
+                                        includes: expected_timer_basenames)
     end
   end
 
@@ -35,7 +35,7 @@ class CLIDeactivateSuccessTest < Minitest::Test
       status, _out, err, calls = run_deactivate_with_capture3_stub
       assert_cli_success(status, err)
       assert_systemctl_call_starts_with(calls, 1, SYSTEMCTL_USER_PREFIX + ["disable"],
-                                        includes: "wheneverd-demo-e5-j0.timer")
+                                        includes: expected_timer_basenames)
     end
   end
 end

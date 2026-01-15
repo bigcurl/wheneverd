@@ -71,7 +71,9 @@ module CLITestHelpers
     args, kwargs = calls.fetch(index)
     assert_equal prefix, args.take(prefix.length)
     assert_equal({}, kwargs)
-    assert_includes args, includes if includes
+    return if includes.nil?
+
+    Array(includes).each { |expected| assert_includes args, expected }
   end
 
   def with_project_dir
@@ -87,5 +89,26 @@ module CLITestHelpers
       assert_equal 0, run_cli(["init"]).first
       yield project_dir
     end
+  end
+
+  def expected_units(identifier: "demo", schedule_path: File.join("config", "schedule.rb"))
+    schedule = Wheneverd::DSL::Loader.load_file(File.expand_path(schedule_path))
+    Wheneverd::Systemd::Renderer.render(schedule, identifier: identifier)
+  end
+
+  def expected_timer_basenames(identifier: "demo",
+                               schedule_path: File.join("config", "schedule.rb"))
+    expected_units(identifier: identifier, schedule_path: schedule_path)
+      .select { |unit| unit.kind == :timer }
+      .map(&:path_basename)
+      .uniq
+  end
+
+  def expected_service_basenames(identifier: "demo",
+                                 schedule_path: File.join("config", "schedule.rb"))
+    expected_units(identifier: identifier, schedule_path: schedule_path)
+      .select { |unit| unit.kind == :service }
+      .map(&:path_basename)
+      .uniq
   end
 end

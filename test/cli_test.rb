@@ -146,12 +146,10 @@ class CLIWriteTest < Minitest::Test
     with_project_dir do |project_dir|
       unit_dir = File.join(project_dir, "tmp_units")
       assert_equal 0, run_cli(["init"]).first
-      status, out, err = run_cli(["write", "--identifier", "demo", "--unit-dir", unit_dir])
+      status, out, err = run_write(unit_dir)
 
-      assert_equal 0, status
-      assert_equal "", err
-      assert_includes out, File.join(unit_dir, "wheneverd-demo-e0-j0.service")
-      assert File.exist?(File.join(unit_dir, "wheneverd-demo-e0-j0.timer"))
+      assert_cli_success(status, err)
+      assert_first_job_written(unit_dir, out)
     end
   end
 
@@ -159,13 +157,40 @@ class CLIWriteTest < Minitest::Test
     with_project_dir do |project_dir|
       unit_dir = File.join(project_dir, "tmp_units")
       assert_equal 0, run_cli(["init"]).first
-      status, out, err = run_cli(["write", "--identifier", "demo", "--unit-dir", unit_dir,
-                                  "--dry-run"])
+      status, out, err = run_write(unit_dir, "--dry-run")
 
       assert_equal 0, status
       assert_equal "", err
-      assert_includes out, File.join(unit_dir, "wheneverd-demo-e0-j0.timer")
+      assert_includes out, File.join(unit_dir, expected_timer_basenames.fetch(0))
       refute Dir.exist?(unit_dir)
+    end
+  end
+
+  def test_write_prunes_old_units_by_default
+    with_project_dir do |project_dir|
+      unit_dir = File.join(project_dir, "tmp_units")
+      units1 = write_schedule_and_expected_units(schedule_with_two_jobs)
+      write_and_assert_success(unit_dir)
+      assert_unit_files_present(unit_dir, units1)
+      units2 = write_schedule_and_expected_units(schedule_with_one_job)
+      write_and_assert_success(unit_dir)
+      assert_unit_files_pruned(unit_dir, units_before: units1, units_after: units2)
+    end
+  end
+
+  def test_write_no_prune_keeps_old_units
+    with_project_dir do |project_dir|
+      unit_dir = File.join(project_dir, "tmp_units")
+      units1 = write_schedule_and_expected_units(schedule_with_two_jobs)
+
+      status, _out, err = run_write(unit_dir)
+      assert_cli_success(status, err)
+
+      write_schedule(schedule_with_one_job)
+      status, _out, err = run_write(unit_dir, "--no-prune")
+      assert_cli_success(status, err)
+
+      assert_unit_files_present(unit_dir, units1)
     end
   end
 
@@ -178,6 +203,69 @@ class CLIWriteTest < Minitest::Test
       assert_includes err, "Schedule file not found"
     end
   end
+
+  def write_schedule(contents)
+    path = File.join("config", "schedule.rb")
+    FileUtils.mkdir_p(File.dirname(path))
+    File.write(path, contents)
+  end
+
+  def schedule_with_two_jobs
+    <<~RUBY
+      # frozen_string_literal: true
+
+      every "1m" do
+        command "echo a"
+      end
+
+      every "2m" do
+        command "echo b"
+      end
+    RUBY
+  end
+
+  def schedule_with_one_job
+    <<~RUBY
+      # frozen_string_literal: true
+
+      every "1m" do
+        command "echo a"
+      end
+    RUBY
+  end
+
+  private
+
+  def run_write(unit_dir, *extra_args)
+    run_cli(["write", "--identifier", "demo", "--unit-dir", unit_dir, *extra_args])
+  end
+
+  def assert_first_job_written(unit_dir, out)
+    assert_includes out, File.join(unit_dir, expected_service_basenames.fetch(0))
+    assert File.exist?(File.join(unit_dir, expected_timer_basenames.fetch(0)))
+  end
+
+  def write_schedule_and_expected_units(contents)
+    write_schedule(contents)
+    expected_units(identifier: "demo")
+  end
+
+  def assert_unit_files_present(unit_dir, units)
+    units.each { |unit| assert File.exist?(File.join(unit_dir, unit.path_basename)) }
+  end
+
+  def assert_unit_files_pruned(unit_dir, units_before:, units_after:)
+    keep = units_after.map(&:path_basename)
+    stale = units_before.map(&:path_basename) - keep
+
+    keep.each { |basename| assert File.exist?(File.join(unit_dir, basename)) }
+    stale.each { |basename| refute File.exist?(File.join(unit_dir, basename)) }
+  end
+
+  def write_and_assert_success(unit_dir, *extra_args)
+    status, _out, err = run_write(unit_dir, *extra_args)
+    assert_cli_success(status, err)
+  end
 end
 
 class CLIDeleteTest < Minitest::Test
@@ -186,14 +274,12 @@ class CLIDeleteTest < Minitest::Test
   def test_delete_removes_units_for_identifier
     with_project_dir do |project_dir|
       unit_dir = File.join(project_dir, "tmp_units")
-      assert_equal 0, run_cli(["init"]).first
-      assert_equal 0, run_cli(["write", "--identifier", "demo", "--unit-dir", unit_dir]).first
+      init_template_schedule
+      write_demo_units(unit_dir)
 
-      status, out, err = run_cli(["delete", "--identifier", "demo", "--unit-dir", unit_dir])
-      assert_equal 0, status
-      assert_equal "", err
-      assert_includes out, File.join(unit_dir, "wheneverd-demo-e0-j0.timer")
-      refute File.exist?(File.join(unit_dir, "wheneverd-demo-e0-j0.timer"))
+      status, out, err = delete_demo_units(unit_dir)
+      assert_cli_success(status, err)
+      assert_demo_timer_deleted(unit_dir, out)
     end
   end
 
@@ -207,6 +293,27 @@ class CLIDeleteTest < Minitest::Test
       assert_equal "", out
       assert_includes err, "identifier must include at least one alphanumeric character"
     end
+  end
+
+  private
+
+  def init_template_schedule
+    assert_equal 0, run_cli(["init"]).first
+  end
+
+  def write_demo_units(unit_dir)
+    assert_equal 0, run_cli(["write", "--identifier", "demo", "--unit-dir", unit_dir]).first
+  end
+
+  def delete_demo_units(unit_dir)
+    run_cli(["delete", "--identifier", "demo", "--unit-dir", unit_dir])
+  end
+
+  def assert_demo_timer_deleted(unit_dir, out)
+    expected_timer = expected_timer_basenames.fetch(0)
+    expected_timer_path = File.join(unit_dir, expected_timer)
+    assert_includes out, expected_timer_path
+    refute File.exist?(expected_timer_path)
   end
 end
 

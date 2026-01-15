@@ -21,7 +21,7 @@ class CLICurrentInstalledUnitsTest < Minitest::Test
       assert_equal 0, run_cli(["write", "--identifier", "demo", "--unit-dir", unit_dir]).first
       status, out, err = run_cli(["current", "--identifier", "demo", "--unit-dir", unit_dir])
       assert_cli_success(status, err)
-      assert_includes out, "# #{File.join(unit_dir, 'wheneverd-demo-e0-j0.timer')}"
+      assert_includes out, "# #{File.join(unit_dir, expected_timer_basenames.fetch(0))}"
     end
   end
 
@@ -39,10 +39,10 @@ class CLICurrentInstalledUnitsTest < Minitest::Test
     with_inited_project_dir do |project_dir|
       unit_dir = File.join(project_dir, "tmp_units")
       assert_equal 0, run_cli(["write", "--identifier", "demo", "--unit-dir", unit_dir]).first
-      File.write(File.join(unit_dir, "wheneverd-demo-e99-j99.timer"), "# not generated\n")
+      File.write(File.join(unit_dir, "wheneverd-demo-000000000000.timer"), "# not generated\n")
       status, out, err = run_cli(["current", "--identifier", "demo", "--unit-dir", unit_dir])
       assert_cli_success(status, err)
-      refute_includes out, "wheneverd-demo-e99-j99.timer"
+      refute_includes out, "wheneverd-demo-000000000000.timer"
     end
   end
 end

@@ -105,6 +105,23 @@ class SystemdRendererNamingTest < Minitest::Test
     assert_equal units1.map(&:contents), units2.map(&:contents)
   end
 
+  def test_units_keep_names_across_entry_reordering
+    entry_a = interval_entry(seconds: 60, command: "echo a")
+    entry_b = boot_entry(seconds: 60, command: "echo b")
+
+    units1 = render_units([entry_a, entry_b], identifier: "my-app").sort_by(&:path_basename)
+    units2 = render_units([entry_b, entry_a], identifier: "my-app").sort_by(&:path_basename)
+
+    assert_equal units1.map(&:path_basename), units2.map(&:path_basename)
+    assert_equal units1.map(&:contents), units2.map(&:contents)
+  end
+
+  def test_duplicate_jobs_get_disambiguated_unit_ids
+    timer_basenames = timer_basenames_for_entries([duplicate_job_entry], identifier: "my-app")
+    assert_equal 2, timer_basenames.length
+    assert_disambiguated_timer_basenames(timer_basenames)
+  end
+
   private
 
   def entries_for_determinism
@@ -119,5 +136,26 @@ class SystemdRendererNamingTest < Minitest::Test
       Wheneverd::Job::Command.new(command: "echo a"),
       Wheneverd::Job::Command.new(command: "echo b")
     ]
+  end
+
+  def duplicate_job_entry
+    Wheneverd::Entry.new(
+      trigger: Wheneverd::Trigger::Interval.new(seconds: 60),
+      jobs: [
+        Wheneverd::Job::Command.new(command: "echo a"),
+        Wheneverd::Job::Command.new(command: "echo a")
+      ]
+    )
+  end
+
+  def timer_basenames_for_entries(entries, identifier:)
+    render_units(entries, identifier: identifier)
+      .map(&:path_basename)
+      .select { |b| b.end_with?(".timer") }
+  end
+
+  def assert_disambiguated_timer_basenames(timer_basenames)
+    assert(timer_basenames.any? { |b| /\Awheneverd-my-app-[0-9a-f]{12}-1\.timer\z/.match?(b) })
+    assert(timer_basenames.any? { |b| /\Awheneverd-my-app-[0-9a-f]{12}-2\.timer\z/.match?(b) })
   end
 end

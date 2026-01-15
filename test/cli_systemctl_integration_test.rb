@@ -71,6 +71,6 @@ class CLISystemctlIntegrationTest < Minitest::Test
     log = File.read(log_path)
     assert_includes log, "--user --no-pager daemon-reload"
     assert_includes log, "--user --no-pager restart"
-    assert_includes log, "wheneverd-demo-e0-j0.timer"
+    assert_match(/wheneverd-demo-[0-9a-f]{12}\.timer/, log)
   end
 end

@@ -36,7 +36,7 @@ module Wheneverd
 
       def self.basename_pattern(identifier)
         id = sanitize_identifier(identifier)
-        /\Awheneverd-#{Regexp.escape(id)}-e\d+-j\d+\.(service|timer)\z/
+        /\Awheneverd-#{Regexp.escape(id)}-(?:[0-9a-f]{12}(?:-\d+)?|e\d+-j\d+)\.(service|timer)\z/
       end
       private_class_method :basename_pattern
 

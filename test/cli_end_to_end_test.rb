@@ -54,7 +54,7 @@ class CLIEndToEndTest < Minitest::Test
     )
     assert_equal 0, status
     assert_equal "", err
-    assert_includes out, "wheneverd-demo-e0-j0.timer"
+    assert_match(/wheneverd-demo-[0-9a-f]{12}\.timer/, out)
     assert_includes out, Wheneverd::Systemd::Renderer::MARKER_PREFIX
   end
 
@@ -65,17 +65,32 @@ class CLIEndToEndTest < Minitest::Test
     )
     assert_equal 0, status
     assert_equal "", err
-    assert_includes out, File.join(unit_dir, "wheneverd-demo-e0-j0.timer")
-    refute File.exist?(File.join(unit_dir, "wheneverd-demo-e0-j0.timer"))
+    timer_path = out.lines.map(&:strip).find { |line| line.end_with?(".timer") }
+    assert timer_path, "expected delete to print at least one *.timer path"
+    assert_includes timer_path, unit_dir
+    refute File.exist?(timer_path)
   end
 
   def assert_timer_unit_written(unit_dir, out)
-    assert_includes out, File.join(unit_dir, "wheneverd-demo-e0-j0.service")
-    assert File.exist?(File.join(unit_dir, "wheneverd-demo-e0-j0.timer"))
+    service_path = out.lines.map(&:strip).find { |line| line.end_with?(".service") }
+    timer_path = out.lines.map(&:strip).find { |line| line.end_with?(".timer") }
+    assert service_path, "expected write to print at least one *.service path"
+    assert timer_path, "expected write to print at least one *.timer path"
+    assert_includes service_path, unit_dir
+    assert_includes timer_path, unit_dir
+    assert File.exist?(timer_path)
   end
 
   def assert_timer_unit_contents(unit_dir)
-    timer_contents = File.read(File.join(unit_dir, "wheneverd-demo-e0-j0.timer"))
+    timer_basenames = Dir.children(unit_dir).select { |b| b.end_with?(".timer") }
+    assert timer_basenames.any?, "expected unit_dir to contain at least one *.timer file"
+
+    timer_contents = timer_basenames.filter_map do |basename|
+      contents = File.read(File.join(unit_dir, basename))
+      contents if contents.include?("OnActiveSec=300")
+    end.first
+
+    assert timer_contents, "expected at least one interval timer with OnActiveSec=300"
     assert_includes timer_contents, Wheneverd::Systemd::Renderer::MARKER_PREFIX
     assert_includes timer_contents, "OnActiveSec=300"
     assert_includes timer_contents, "OnUnitActiveSec=300"

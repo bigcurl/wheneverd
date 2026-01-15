@@ -18,7 +18,7 @@ class SystemdUnitDeleterTest < Minitest::Test
       deleted = Wheneverd::Systemd::UnitDeleter.delete(identifier: "demo", unit_dir: unit_dir)
       assert_equal written_paths.sort, deleted.sort
       written_paths.each { |p| refute File.exist?(p) }
-      assert File.exist?(File.join(unit_dir, "wheneverd-demo-e999-j999.timer"))
+      assert File.exist?(File.join(unit_dir, "wheneverd-demo-000000000000.timer"))
     end
   end
 
@@ -27,7 +27,7 @@ class SystemdUnitDeleterTest < Minitest::Test
       create_generated_different_identifier(unit_dir)
       File.write(File.join(unit_dir, "other.timer"), "#{marker_line}\n")
       Wheneverd::Systemd::UnitDeleter.delete(identifier: "demo", unit_dir: unit_dir)
-      assert File.exist?(File.join(unit_dir, "wheneverd-other-e0-j0.timer"))
+      assert File.exist?(File.join(unit_dir, "wheneverd-other-000000000000.timer"))
       assert File.exist?(File.join(unit_dir, "other.timer"))
     end
   end
@@ -72,12 +72,12 @@ class SystemdUnitDeleterTest < Minitest::Test
   end
 
   def create_non_generated_match(unit_dir, identifier)
-    path = File.join(unit_dir, "wheneverd-#{identifier}-e999-j999.timer")
+    path = File.join(unit_dir, "wheneverd-#{identifier}-000000000000.timer")
     File.write(path, "[Timer]\nOnCalendar=daily\n")
   end
 
   def create_generated_different_identifier(unit_dir)
-    path = File.join(unit_dir, "wheneverd-other-e0-j0.timer")
+    path = File.join(unit_dir, "wheneverd-other-000000000000.timer")
     File.write(path, "#{marker_line}\n[Timer]\nOnCalendar=daily\n")
   end
 end

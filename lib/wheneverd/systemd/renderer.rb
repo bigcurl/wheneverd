@@ -5,7 +5,7 @@ module Wheneverd
     # A rendered systemd unit (service or timer).
     #
     # @!attribute [r] path_basename
-    #   @return [String] file name, e.g. `"wheneverd-myapp-e0-j0.timer"`
+    #   @return [String] file name, e.g. `"wheneverd-myapp-0123abcd4567.timer"`
     # @!attribute [r] kind
     #   @return [Symbol] `:service` or `:timer`
     # @!attribute [r] contents
@@ -18,7 +18,11 @@ module Wheneverd
     #
     # Unit file names are generated as:
     #
-    #   `wheneverd-<identifier>-e<entry_index>-j<job_index>.{service,timer}`
+    #   `wheneverd-<identifier>-<stable_id>.{service,timer}`
+    #
+    # The stable ID is derived from the job's trigger + command so reordering schedule blocks
+    # does not rename units. If there are duplicate jobs with identical trigger + command, a stable
+    # `-N` suffix is appended to avoid collisions.
     #
     # The identifier is sanitized for use in filenames (invalid characters become `-`).
     class Renderer
@@ -45,9 +49,14 @@ module Wheneverd
       private_class_method :validate_schedule
 
       def self.render_schedule(schedule, id)
-        schedule.entries.each_with_index.flat_map do |entry, entry_index|
-          entry.jobs.each_with_index.flat_map do |job, job_index|
-            base = "wheneverd-#{id}-e#{entry_index}-j#{job_index}"
+        stable_ids = Wheneverd::Systemd::UnitNamer.stable_ids_for(schedule)
+        stable_id_index = 0
+
+        schedule.entries.flat_map do |entry|
+          entry.jobs.flat_map do |job|
+            stable_id = stable_ids.fetch(stable_id_index)
+            stable_id_index += 1
+            base = "wheneverd-#{id}-#{stable_id}"
             render_job(base, entry.trigger, job)
           end
         end
