@@ -38,6 +38,7 @@ wheneverd activate
 wheneverd deactivate
 wheneverd reload
 wheneverd current
+wheneverd linger status
 ```
 
 ### Minimal `config/schedule.rb` example
@@ -79,6 +80,35 @@ After changing your schedule, rewrite units and restart the timer(s) to pick up 
 
 ```bash
 wheneverd reload
+```
+
+### User timers and lingering (`loginctl enable-linger`)
+
+By default, `wheneverd` uses *user* systemd units (`systemctl --user`). On many systems, the per-user systemd instance
+only runs while you are logged in. If you want timers to run after logout (or on boot without an interactive login),
+enable lingering for your user:
+
+```bash
+wheneverd linger enable
+```
+
+This runs `loginctl enable-linger "$USER"` under the hood. If you see “Access denied”, your system may require admin
+privileges (polkit policy); try:
+
+```bash
+sudo loginctl enable-linger "$USER"
+```
+
+Check whether lingering is enabled:
+
+```bash
+wheneverd linger status
+```
+
+To disable it later:
+
+```bash
+wheneverd linger disable
 ```
 
 ## Syntax

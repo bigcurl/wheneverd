@@ -69,6 +69,7 @@ require_relative "cli/activate"
 require_relative "cli/deactivate"
 require_relative "cli/reload"
 require_relative "cli/current"
+require_relative "cli/linger"
 
 module Wheneverd
   class CLI
@@ -83,5 +84,6 @@ module Wheneverd
     subcommand "deactivate", "Stop and disable timers via systemctl --user", Wheneverd::CLI::Deactivate
     subcommand "reload", "Write units, reload daemon, restart timers", Wheneverd::CLI::Reload
     subcommand "current", "Show installed units from disk", Wheneverd::CLI::Current
+    subcommand "linger", "Manage systemd user lingering via loginctl", Wheneverd::CLI::Linger
   end
 end

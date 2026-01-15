@@ -19,5 +19,8 @@ module Wheneverd
 
     # Raised when a `systemctl` invocation fails.
     class SystemctlError < Error; end
+
+    # Raised when a `loginctl` invocation fails.
+    class LoginctlError < Error; end
   end
 end

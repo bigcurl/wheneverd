@@ -5,7 +5,7 @@ On release, entries are moved into `## x.y.z` sections that match the gem versio
 
 ## Unreleased
 
-- No changes yet.
+- Adds `wheneverd linger enable|disable|status` for managing systemd user lingering via `loginctl`.
 
 ## 0.1.0
 

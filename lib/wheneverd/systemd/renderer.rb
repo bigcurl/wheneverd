@@ -80,12 +80,10 @@ module Wheneverd
       private_class_method :build_service_unit
 
       def self.build_timer_unit(path_basename, trigger)
-        timer_lines = timer_lines_for(trigger)
-
         Unit.new(
           path_basename: path_basename,
           kind: :timer,
-          contents: timer_contents(path_basename, timer_lines)
+          contents: timer_contents(path_basename, timer_lines_for(trigger))
         )
       end
       private_class_method :build_timer_unit
