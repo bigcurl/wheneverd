@@ -12,6 +12,8 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 
 ## Unreleased
 
+## 0.2.1
+
 - Adds `wheneverd linger enable|disable|status` for managing systemd user lingering via `loginctl`.
 - Removes an unused filtering metadata keyword argument from the schedule DSL.
 

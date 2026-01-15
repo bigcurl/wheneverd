@@ -5,6 +5,8 @@ On release, entries are moved into `## x.y.z` sections that match the gem versio
 
 ## Unreleased
 
+## 0.2.1
+
 - Removes an unused filtering metadata keyword argument from the schedule DSL.
 
 ## 0.2.0
