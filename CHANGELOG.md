@@ -1,9 +1,13 @@
 # Changelog
 
-This project keeps all changes in `## Unreleased` until the CLI and generated systemd output settle.
-Once releases begin, entries will be moved into `## x.y.z` sections that match the gem version.
+This project keeps all changes in `## Unreleased` until they are released.
+On release, entries are moved into `## x.y.z` sections that match the gem version.
 
 ## Unreleased
+
+- No changes yet.
+
+## 0.1.0
 
 - Provides a Clamp-based `wheneverd` CLI with `--help`, `--version`, and `--verbose` (usage errors in `ERROR: ...` format).
 - Adds core domain objects and helpers for building schedules (interval parsing, durations, triggers, entries, jobs).

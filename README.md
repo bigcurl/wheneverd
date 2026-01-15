@@ -10,7 +10,7 @@ Working end-to-end: schedule DSL loading, systemd unit rendering, and safe unit 
 
 Known limitations: `roles:` is accepted but not used for filtering yet.
 
-See `FEATURE_SUMMARY.md` for high-level user-visible behavior, and `CHANGELOG.md` for release notes (once versioned releases begin).
+See `FEATURE_SUMMARY.md` for high-level user-visible behavior, and `CHANGELOG.md` for release notes.
 
 ## Installation
 

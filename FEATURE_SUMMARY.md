@@ -12,6 +12,10 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 
 ## Unreleased
 
+- No changes yet.
+
+## 0.1.0
+
 - The `wheneverd` CLI is implemented using Clamp (`--help`, usage errors in `ERROR: ...` format, `--verbose` for details).
 - The gem includes a small “whenever-like” domain model (interval parsing, durations, triggers, schedules).
 - The gem can load a Ruby schedule DSL file via `Wheneverd::DSL::Loader.load_file`.
