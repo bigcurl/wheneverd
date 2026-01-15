@@ -10,6 +10,7 @@ Once releases begin, entries will be moved into `## x.y.z` sections that match t
 - Adds a Ruby DSL loader (`Wheneverd::DSL::Loader.load_file`) supporting `every(...)` blocks with `command(...)` jobs.
 - Adds systemd unit rendering (`Wheneverd::Systemd::Renderer.render`) for interval and calendar triggers.
 - Adds helpers to write and delete generated unit files (`Wheneverd::Systemd::UnitWriter`/`UnitDeleter`).
-- Adds CLI subcommands: `init`, `show`, `write`, and `delete`.
+- Adds CLI subcommands: `init`, `show`, `write`, `delete`, `activate`, `deactivate`, `reload`, and `current`.
 - `wheneverd init` prints whether it wrote or overwrote the schedule template.
 - Using `every :reboot` now raises an error (the `:reboot` period shortcut is not supported).
+- Developer: `rake ci` runs with Bundler setup (so it works without `bundle exec` after `bundle install`).

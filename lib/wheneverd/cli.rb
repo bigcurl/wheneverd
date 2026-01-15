@@ -30,6 +30,17 @@ module Wheneverd
       warn error.full_message if verbose?
       1
     end
+
+    def render_units
+      schedule_obj = load_schedule
+      Wheneverd::Systemd::Renderer.render(schedule_obj, identifier: identifier_value)
+    end
+
+    def timer_unit_basenames(units = render_units)
+      units.select { |unit| unit.kind == :timer }.map(&:path_basename).uniq
+    end
+
+    private :render_units, :timer_unit_basenames
   end
 end
 
@@ -38,6 +49,10 @@ require_relative "cli/init"
 require_relative "cli/show"
 require_relative "cli/write"
 require_relative "cli/delete"
+require_relative "cli/activate"
+require_relative "cli/deactivate"
+require_relative "cli/reload"
+require_relative "cli/current"
 
 module Wheneverd
   class CLI
@@ -48,5 +63,9 @@ module Wheneverd
     subcommand "show", "Render units to stdout", Wheneverd::CLI::Show
     subcommand "write", "Write units to disk", Wheneverd::CLI::Write
     subcommand "delete", "Delete units from disk", Wheneverd::CLI::Delete
+    subcommand "activate", "Enable and start timers via systemctl --user", Wheneverd::CLI::Activate
+    subcommand "deactivate", "Stop and disable timers via systemctl --user", Wheneverd::CLI::Deactivate
+    subcommand "reload", "Write units, reload daemon, restart timers", Wheneverd::CLI::Reload
+    subcommand "current", "Show installed units from disk", Wheneverd::CLI::Current
   end
 end

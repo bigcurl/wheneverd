@@ -1,25 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "test_helper"
-require "wheneverd/cli"
-require "fileutils"
-require "tmpdir"
-
-module CLITestHelpers
-  def run_cli(args)
-    status = nil
-    out, err = capture_io { status = Wheneverd::CLI.run("wheneverd", args) }
-    [status, out, err]
-  end
-
-  def with_project_dir
-    Dir.mktmpdir("wheneverd-project-") do |tmp|
-      project_dir = File.join(tmp, "myapp")
-      FileUtils.mkdir_p(project_dir)
-      Dir.chdir(project_dir) { yield project_dir }
-    end
-  end
-end
+require_relative "support/cli_test_helpers"
 
 class CLIHelpAndVersionTest < Minitest::Test
   include CLITestHelpers

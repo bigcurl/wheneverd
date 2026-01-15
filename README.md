@@ -32,6 +32,10 @@ wheneverd init
 wheneverd show
 wheneverd write
 wheneverd delete
+wheneverd activate
+wheneverd deactivate
+wheneverd reload
+wheneverd current
 ```
 
 ### Minimal `config/schedule.rb` example
@@ -52,6 +56,27 @@ Preview the generated units:
 
 ```bash
 wheneverd show
+```
+
+### Activating / deactivating (systemd)
+
+After `wheneverd write`, use `wheneverd activate` to enable + start the generated timer units (by default, user units
+in `~/.config/systemd/user`):
+
+```bash
+wheneverd activate
+```
+
+Deactivate a timer:
+
+```bash
+wheneverd deactivate
+```
+
+After changing your schedule, rewrite units and restart the timer(s) to pick up changes:
+
+```bash
+wheneverd reload
 ```
 
 ## Syntax
@@ -120,11 +145,20 @@ Commands:
 - `wheneverd show [--schedule PATH] [--identifier NAME]` prints rendered units to stdout.
 - `wheneverd write [--dry-run] [--unit-dir PATH]` writes units to disk (or prints paths in `--dry-run` mode).
 - `wheneverd delete [--dry-run] [--unit-dir PATH]` deletes previously generated units for the identifier.
+- `wheneverd activate [--schedule PATH] [--identifier NAME]` runs `systemctl --user daemon-reload` and enables/starts the timers.
+- `wheneverd deactivate [--schedule PATH] [--identifier NAME]` stops and disables the timers.
+- `wheneverd reload [--schedule PATH] [--identifier NAME] [--unit-dir PATH]` writes units, reloads systemd, and restarts timers.
+- `wheneverd current [--identifier NAME] [--unit-dir PATH]` prints the currently installed unit file contents from disk.
 
 ## Development
 
 ```bash
+bundle install
 bundle exec rake test
+bundle exec rake ci
+
+# Also supported after `bundle install`:
+rake ci
 ```
 
 Test runs write a coverage report to `coverage/`.

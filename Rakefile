@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
+begin
+  require "bundler/setup"
+  BUNDLER_SETUP_AVAILABLE = true
+rescue LoadError
+  BUNDLER_SETUP_AVAILABLE = false
+end
+
 require "json"
 require "open3"
 require "rake/testtask"
@@ -7,6 +14,7 @@ require "rake/testtask"
 Rake::TestTask.new do |t|
   t.libs << "lib"
   t.pattern = "test/**/*_test.rb"
+  t.ruby_opts << "-rbundler/setup" if BUNDLER_SETUP_AVAILABLE
 end
 
 task default: :ci

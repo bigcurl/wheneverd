@@ -8,5 +8,6 @@ module Wheneverd
     class InvalidTimeError < Error; end
     class InvalidCalendarSpecError < Error; end
     class UnsupportedCronError < Error; end
+    class SystemctlError < Error; end
   end
 end
