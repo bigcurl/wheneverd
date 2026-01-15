@@ -5,9 +5,14 @@ require "tempfile"
 
 module Wheneverd
   module Systemd
+    # Writes rendered systemd units to a target directory (defaulting to the user unit dir).
     class UnitWriter
       DEFAULT_UNIT_DIR = File.join(Dir.home, ".config", "systemd", "user").freeze
 
+      # @param units [Array<Wheneverd::Systemd::Unit>]
+      # @param unit_dir [String]
+      # @param dry_run [Boolean] return paths without writing
+      # @return [Array<String>] destination paths
       def self.write(units, unit_dir: DEFAULT_UNIT_DIR, dry_run: false)
         raise ArgumentError, "units must be an Array" unless units.is_a?(Array)
 

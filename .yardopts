@@ -1,0 +1,8 @@
+--quiet
+--markup markdown
+--markup-provider redcarpet
+--output-dir doc
+--title "wheneverd"
+--readme README.md
+--files LICENSE,CHANGELOG.md,FEATURE_SUMMARY.md
+lib/**/*.rb

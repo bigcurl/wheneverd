@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Wheneverd
+  # Implements `wheneverd current` (print installed unit files from disk).
   class CLI::Current < CLI
     def execute
       paths = Wheneverd::Systemd::UnitLister.list(identifier: identifier_value, unit_dir: unit_dir)

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Wheneverd
+  # Implements `wheneverd reload` (write units, reload daemon, restart timers).
   class CLI::Reload < CLI
     def execute
       units = render_units

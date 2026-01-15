@@ -2,6 +2,10 @@
 
 module Wheneverd
   module Systemd
+    # Translates higher-level schedule period specs into systemd `OnCalendar=` values.
+    #
+    # The DSL produces values like `"day@4:30 am"` or `"cron:0 0 27-31 * *"`, which are normalized
+    # here into systemd-friendly calendar expressions.
     module CalendarSpec
       BASE_ALIASES = {
         "hour" => "hourly",
@@ -26,6 +30,11 @@ module Wheneverd
         "sunday" => "Sun"
       }.freeze
 
+      # Convert a calendar spec into a systemd `OnCalendar=` value.
+      #
+      # @param spec [String]
+      # @return [String]
+      # @raise [Wheneverd::Systemd::InvalidCalendarSpecError]
       def self.to_on_calendar(spec)
         input = spec.to_s.strip
         raise InvalidCalendarSpecError, "Invalid calendar spec: empty" if input.empty?

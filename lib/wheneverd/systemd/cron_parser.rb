@@ -2,7 +2,11 @@
 
 module Wheneverd
   module Systemd
+    # Converts a limited subset of 5-field cron expressions into systemd `OnCalendar=` specs.
     module CronParser
+      # @param cron_5_fields [String]
+      # @return [String] systemd `OnCalendar=` value
+      # @raise [Wheneverd::Systemd::UnsupportedCronError]
       def self.to_on_calendar(cron_5_fields)
         input = cron_5_fields.to_s.strip
         minute_str, hour_str, dom_str, month_str, dow_str = split_fields(input)

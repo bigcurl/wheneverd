@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Wheneverd
+  # Implements `wheneverd write` (write rendered units to disk).
   class CLI::Write < CLI
     option "--dry-run", :flag, "Print paths only; do not write"
 

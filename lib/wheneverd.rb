@@ -3,6 +3,14 @@
 require_relative "wheneverd/version"
 
 module Wheneverd
+  # Top-level namespace for `wheneverd`.
+  #
+  # This gem loads a Ruby schedule DSL (similar to the `whenever` gem), then renders the result into
+  # `systemd` timer + service units. The main entrypoints are:
+  #
+  # - {Wheneverd::DSL::Loader} for evaluating `config/schedule.rb`
+  # - {Wheneverd::Systemd::Renderer} for generating unit contents
+  # - {Wheneverd::CLI} for the command-line interface
   class Error < StandardError; end
 end
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Wheneverd
+  # Implements `wheneverd deactivate` (stop + disable timers via `systemctl --user`).
   class CLI::Deactivate < CLI
     def execute
       timer_units = timer_unit_basenames

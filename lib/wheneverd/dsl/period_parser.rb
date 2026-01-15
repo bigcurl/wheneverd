@@ -4,6 +4,18 @@ require_relative "calendar_symbol_period_list"
 
 module Wheneverd
   module DSL
+    # Converts DSL `every(...)` period values into trigger objects.
+    #
+    # Supported period forms are described in the README.
+    #
+    # Notes:
+    #
+    # - Interval strings and {Wheneverd::Duration} values produce monotonic triggers
+    #   ({Wheneverd::Trigger::Interval}).
+    # - Calendar symbol periods and cron strings produce calendar triggers
+    #   ({Wheneverd::Trigger::Calendar}).
+    # - The `at:` option is only valid for calendar triggers, with a convenience exception for
+    #   `every 1.day, at: ...` which is treated as a daily calendar trigger.
     class PeriodParser
       DAY_SECONDS = 60 * 60 * 24
       REBOOT_NOT_SUPPORTED_MESSAGE =
@@ -16,10 +28,14 @@ module Wheneverd
 
       attr_reader :path
 
+      # @param path [String] schedule path for error reporting
       def initialize(path:)
         @path = path
       end
 
+      # @param period [String, Symbol, Array<Symbol>, Wheneverd::Duration]
+      # @param at [String, Array<String>, nil]
+      # @return [Wheneverd::Trigger::Interval, Wheneverd::Trigger::Calendar]
       def trigger_for(period, at:)
         at_times = AtNormalizer.normalize(at, path: path)
         trigger_for_period(period, at_times: at_times)

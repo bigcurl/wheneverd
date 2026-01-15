@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Wheneverd
+  # Implements `wheneverd delete` (delete previously generated units for the identifier).
   class CLI::Delete < CLI
     option "--dry-run", :flag, "Print paths only; do not delete"
 

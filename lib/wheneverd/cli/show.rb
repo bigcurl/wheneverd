@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Wheneverd
+  # Implements `wheneverd show` (render units to stdout).
   class CLI::Show < CLI
     def execute
       schedule_obj = load_schedule

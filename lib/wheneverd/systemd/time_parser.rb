@@ -2,7 +2,11 @@
 
 module Wheneverd
   module Systemd
+    # Parses human-friendly times into `HH:MM:SS` for systemd `OnCalendar=` specs.
     module TimeParser
+      # @param str [String]
+      # @return [String] time in `HH:MM:SS` format
+      # @raise [Wheneverd::Systemd::InvalidTimeError]
       def self.parse(str)
         input = str.to_s.strip
         raise InvalidTimeError, "Invalid time: empty" if input.empty?

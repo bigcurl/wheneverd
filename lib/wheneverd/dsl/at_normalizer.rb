@@ -2,7 +2,13 @@
 
 module Wheneverd
   module DSL
+    # Validates and normalizes the `at:` option from the schedule DSL.
+    #
+    # `at:` can be a single string (e.g. `"4:30 am"`) or an array of strings (multiple run times).
     module AtNormalizer
+      # @param at [String, Array<String>, nil]
+      # @param path [String] schedule path for error reporting
+      # @return [Array<String>] normalized time strings (not parsed)
       def self.normalize(at, path:)
         return [] if at.nil?
 

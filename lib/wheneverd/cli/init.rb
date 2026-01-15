@@ -3,6 +3,7 @@
 require "fileutils"
 
 module Wheneverd
+  # Implements `wheneverd init` to create a schedule template file.
   class CLI::Init < CLI
     option "--force", :flag, "Overwrite existing file"
 

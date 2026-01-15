@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Wheneverd
+  # Implements `wheneverd activate` (enable + start timers via `systemctl --user`).
   class CLI::Activate < CLI
     def execute
       timer_units = timer_unit_basenames

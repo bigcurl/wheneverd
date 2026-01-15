@@ -4,6 +4,9 @@ require "clamp"
 require_relative "../wheneverd"
 
 module Wheneverd
+  # Command-line interface for `wheneverd`.
+  #
+  # This class defines global options and shared helpers used by each subcommand.
   class CLI < Clamp::Command
     option ["-v", "--version"], :flag, "Print version"
     option "--verbose", :flag, "Verbose output"
@@ -12,10 +15,14 @@ module Wheneverd
     option "--unit-dir", "PATH", "systemd unit directory",
            default: Wheneverd::Systemd::UnitWriter::DEFAULT_UNIT_DIR
 
+    # @return [String] the identifier used for unit file names
     def identifier_value
       identifier || File.basename(Dir.pwd)
     end
 
+    # Load the configured schedule file.
+    #
+    # @return [Wheneverd::Schedule]
     def load_schedule
       path = File.expand_path(schedule)
       unless File.file?(path)
@@ -25,17 +32,26 @@ module Wheneverd
       Wheneverd::DSL::Loader.load_file(path)
     end
 
+    # Print an error message and return a non-zero exit status.
+    #
+    # @param error [Exception]
+    # @return [Integer]
     def handle_error(error)
       warn error.message
       warn error.full_message if verbose?
       1
     end
 
+    # Render schedule units for this invocation.
+    #
+    # @return [Array<Wheneverd::Systemd::Unit>]
     def render_units
       schedule_obj = load_schedule
       Wheneverd::Systemd::Renderer.render(schedule_obj, identifier: identifier_value)
     end
 
+    # @param units [Array<Wheneverd::Systemd::Unit>]
+    # @return [Array<String>] timer unit basenames
     def timer_unit_basenames(units = render_units)
       units.select { |unit| unit.kind == :timer }.map(&:path_basename).uniq
     end

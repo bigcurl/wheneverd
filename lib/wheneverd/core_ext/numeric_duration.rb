@@ -2,6 +2,12 @@
 
 module Wheneverd
   module CoreExt
+    # `Numeric` helpers for creating {Wheneverd::Duration} values.
+    #
+    # @example
+    #   every 5.minutes do
+    #     command "echo hello"
+    #   end
     module NumericDuration
       def second
         Wheneverd::Duration.new(to_duration_seconds(1))
@@ -41,4 +47,10 @@ module Wheneverd
   end
 end
 
+# Extend Ruby's `Numeric` with duration helpers.
+#
+# @!parse
+#   class ::Numeric
+#     include Wheneverd::CoreExt::NumericDuration
+#   end
 Numeric.include(Wheneverd::CoreExt::NumericDuration)

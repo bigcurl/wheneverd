@@ -4,7 +4,14 @@ require "open3"
 
 module Wheneverd
   module Systemd
+    # Thin wrapper around `systemctl` that raises on non-zero exit status.
     class Systemctl
+      # Run `systemctl` and return stdout/stderr.
+      #
+      # @param args [Array<String>]
+      # @param user [Boolean] use `--user` (default: true)
+      # @return [Array(String, String)] stdout and stderr
+      # @raise [Wheneverd::Systemd::SystemctlError]
       def self.run(*args, user: true)
         cmd = ["systemctl"]
         cmd << "--user" if user

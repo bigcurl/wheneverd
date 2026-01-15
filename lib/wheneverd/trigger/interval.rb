@@ -2,9 +2,12 @@
 
 module Wheneverd
   module Trigger
+    # A monotonic interval trigger, rendered as `OnUnitActiveSec=`.
     class Interval
+      # @return [Integer]
       attr_reader :seconds
 
+      # @param seconds [Integer] seconds between runs (must be positive)
       def initialize(seconds:)
         unless seconds.is_a?(Integer)
           raise ArgumentError, "Interval seconds must be an Integer (got #{seconds.class})"
@@ -14,6 +17,7 @@ module Wheneverd
         @seconds = seconds
       end
 
+      # @return [Array<String>] systemd `[Timer]` lines for this trigger
       def systemd_timer_lines
         ["OnUnitActiveSec=#{seconds}"]
       end

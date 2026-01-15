@@ -2,7 +2,17 @@
 
 module Wheneverd
   module DSL
+    # Loads a schedule file into a {Wheneverd::Schedule}.
+    #
+    # This evaluates the file as Ruby in an isolated DSL context, and wraps errors with the
+    # schedule path for clearer CLI output.
+    #
+    # Note that schedules are arbitrary Ruby code. Do not load untrusted schedule files.
     class Loader
+      # Load and evaluate a schedule file.
+      #
+      # @param path [String]
+      # @return [Wheneverd::Schedule]
       def self.load_file(path)
         absolute_path = File.expand_path(path.to_s)
         evaluate_file(absolute_path)

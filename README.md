@@ -85,6 +85,8 @@ wheneverd reload
 
 Schedules are defined in a Ruby file (default: `config/schedule.rb`) and evaluated in a dedicated DSL context.
 
+Note: schedule files are executed as Ruby. Do not run untrusted schedule code.
+
 The core shape is:
 
 ```ruby
@@ -105,6 +107,13 @@ end
 
 `command("...")` appends a oneshot `ExecStart=` job. Commands must be non-empty strings.
 
+The command string is inserted into `ExecStart=` as-is (no shell wrapping). If you need shell features
+(pipes, redirects, globbing, env var expansion), wrap it yourself, for example:
+
+```ruby
+command "/bin/bash -lc 'echo hello | sed -e s/hello/hi/'"
+```
+
 ### `every` periods
 
 Supported `period` forms:
@@ -116,9 +125,18 @@ Supported `period` forms:
 - Day selectors: `:monday..:sunday`, plus `:weekday` and `:weekend` (calendar schedules; multiple day symbols supported).
 - Cron strings (5 fields), like `"0 0 27-31 * *"` (calendar schedules).
 
+Notes:
+
+- Interval/duration schedules are monotonic (run relative to last execution), while calendar schedules are wall-clock
+  based. In particular, `every 1.day` is monotonic, but `every :day` is calendar-based.
+- `at:` is only supported with calendar periods. `every 1.day, at: ...` is supported as a convenience and is treated
+  as a daily calendar trigger.
+
 ### `at:` times
 
 `at:` may be a single string or an array of strings. Times are normalized at render time.
+
+`at:` is not supported for interval strings (like `"5m"`) or cron strings.
 
 Accepted examples:
 
@@ -153,6 +171,7 @@ Notes:
 
 - Errors use Clamp-style `ERROR: ...` formatting; add `--verbose` to include error details.
 - `wheneverd delete` / `wheneverd current` only operate on units matching the identifier *and* the generated marker line.
+- Identifiers are sanitized for use in unit file names (non-alphanumeric characters become `-`).
 
 Commands:
 
@@ -171,9 +190,13 @@ Commands:
 bundle install
 bundle exec rake test
 bundle exec rake ci
+bundle exec rake yard
 
 # Also supported after `bundle install`:
 rake ci
+rake yard
 ```
 
 Test runs write a coverage report to `coverage/`.
+
+YARD docs are written to `doc/` (and `.yardoc/`).

@@ -11,6 +11,14 @@ require "json"
 require "open3"
 require "rake/testtask"
 
+begin
+  require "yard"
+  require "yard/rake/yardoc_task"
+  YARD_AVAILABLE = true
+rescue LoadError
+  YARD_AVAILABLE = false
+end
+
 Rake::TestTask.new do |t|
   t.libs << "lib"
   t.pattern = "test/**/*_test.rb"
@@ -179,4 +187,10 @@ task :ci do
   Rake::Task["ci:test"].invoke
 ensure
   print_ci_summary
+end
+
+if YARD_AVAILABLE
+  YARD::Rake::YardocTask.new(:yard)
+  desc "Alias for `rake yard`"
+  task doc: :yard
 end

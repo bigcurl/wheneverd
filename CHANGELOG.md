@@ -15,4 +15,5 @@ Once releases begin, entries will be moved into `## x.y.z` sections that match t
 - `wheneverd init` prints whether it wrote or overwrote the schedule template.
 - Using `every :reboot` now raises an error (the `:reboot` period shortcut is not supported).
 - Developer: `rake ci` runs with Bundler setup (so it works without `bundle exec` after `bundle install`).
+- Developer: adds YARD tasks (`rake yard` / `rake doc`) and inline API documentation.
 - CLI: `delete` / `current` only operate on units matching the identifier and generated marker.

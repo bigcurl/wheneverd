@@ -2,7 +2,12 @@
 
 module Wheneverd
   module DSL
+    # Validates `every(:monday, :tuesday, ...)` symbol lists.
     module CalendarSymbolPeriodList
+      # @param periods [Array<Symbol>]
+      # @param allowed_symbols [Array<Symbol>]
+      # @param path [String]
+      # @return [Array<Symbol>] the validated input
       def self.validate(periods, allowed_symbols:, path:)
         validate_array!(periods, path: path)
         validate_symbols!(periods, path: path)
