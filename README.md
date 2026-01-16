@@ -34,6 +34,7 @@ bundle install
 wheneverd --help
 wheneverd init
 wheneverd show
+wheneverd validate
 wheneverd write
 wheneverd delete
 wheneverd activate
@@ -221,6 +222,7 @@ Commands:
 
 - `wheneverd init [--schedule PATH] [--force]` writes a template schedule file.
 - `wheneverd show [--schedule PATH] [--identifier NAME]` prints rendered units to stdout.
+- `wheneverd validate [--schedule PATH] [--identifier NAME] [--verify]` validates rendered `OnCalendar=` values via `systemd-analyze calendar` (and with `--verify`, runs `systemd-analyze --user verify` on temporary unit files).
 - `wheneverd write [--schedule PATH] [--identifier NAME] [--unit-dir PATH] [--dry-run] [--[no-]prune]` writes units to disk (or prints paths in `--dry-run` mode).
 - `wheneverd delete [--identifier NAME] [--unit-dir PATH] [--dry-run]` deletes previously generated units for the identifier.
 - `wheneverd activate [--schedule PATH] [--identifier NAME]` runs `systemctl --user daemon-reload` and enables/starts the timers.

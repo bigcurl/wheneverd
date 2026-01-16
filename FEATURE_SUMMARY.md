@@ -13,6 +13,7 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 ## Unreleased
 
 - Schedule DSL: `command` accepts argv arrays, and adds a `shell` helper for `/bin/bash -lc`.
+- Adds `wheneverd validate` to validate rendered `OnCalendar=` values via `systemd-analyze calendar` (and with `--verify`, runs `systemd-analyze --user verify` on temporary unit files).
 
 ## 0.2.1
 

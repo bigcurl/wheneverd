@@ -22,5 +22,8 @@ module Wheneverd
 
     # Raised when a `loginctl` invocation fails.
     class LoginctlError < Error; end
+
+    # Raised when a `systemd-analyze` invocation fails (or `systemd-analyze` is not available).
+    class SystemdAnalyzeError < Error; end
   end
 end
