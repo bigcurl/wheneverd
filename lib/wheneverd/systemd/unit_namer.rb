@@ -53,7 +53,7 @@ module Wheneverd
       def self.job_signature(job)
         case job
         when Wheneverd::Job::Command
-          "command:#{job.command}"
+          job.signature
         else
           raise ArgumentError, "Unsupported job type: #{job.class}"
         end

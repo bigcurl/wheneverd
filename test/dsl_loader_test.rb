@@ -45,6 +45,29 @@ class DSLLoaderIntervalAndDurationTest < Minitest::Test
     assert_equal ["echo hello"], entry.jobs.map(&:command)
   end
 
+  def test_loads_argv_command
+    schedule = load_schedule(<<~RUBY)
+      every "5m" do
+        command ["echo", "hello world"]
+      end
+    RUBY
+
+    job = schedule.entries.fetch(0).jobs.fetch(0)
+    assert_equal ["echo", "hello world"], job.argv
+    assert_equal "echo \"hello world\"", job.command
+  end
+
+  def test_loads_shell_helper
+    schedule = load_schedule(<<~RUBY)
+      every "5m" do
+        shell "echo hello | sed -e s/hello/hi/"
+      end
+    RUBY
+
+    job = schedule.entries.fetch(0).jobs.fetch(0)
+    assert_equal ["/bin/bash", "-lc", "echo hello | sed -e s/hello/hi/"], job.argv
+  end
+
   def test_loads_duration_with_at_as_calendar
     schedule = load_schedule(<<~RUBY)
       every 1.day, at: "4:30 am" do

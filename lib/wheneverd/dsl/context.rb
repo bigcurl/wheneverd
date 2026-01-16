@@ -5,7 +5,7 @@ module Wheneverd
     # The evaluation context used for schedule files.
     #
     # The schedule file is evaluated via `instance_eval`, so methods defined here become available
-    # as the schedule DSL (`every`, `command`).
+    # as the schedule DSL (`every`, `command`, `shell`).
     class Context
       # @return [String] absolute schedule path
       attr_reader :path
@@ -44,20 +44,57 @@ module Wheneverd
 
       # Add a oneshot command job to the current `every` entry.
       #
-      # @param command_str [String]
+      # @param command_value [String, Array<String>]
       # @return [void]
-      def command(command_str)
-        unless @current_entry
-          raise LoadError.new("command() must be called inside every() block",
-                              path: path)
-        end
+      def command(command_value)
+        ensure_in_every_block!("command")
 
-        @current_entry.add_job(Wheneverd::Job::Command.new(command: command_str))
+        @current_entry.add_job(Wheneverd::Job::Command.new(command: command_value))
       rescue Wheneverd::InvalidCommandError => e
         raise LoadError.new(e.message, path: path)
       end
 
+      # Add a oneshot command job that runs via `/bin/bash -lc`.
+      #
+      # @example
+      #   shell "echo hello | sed -e s/hello/hi/"
+      #
+      # @param script [String] non-empty script to pass as `bash -lc <script>`
+      # @param shell [String] shell executable (default: "/bin/bash")
+      # @return [void]
+      def shell(script, shell: "/bin/bash")
+        ensure_in_every_block!("shell")
+        script_stripped = normalize_shell_script(script)
+        shell_executable = normalize_shell_executable(shell)
+        command([shell_executable, "-lc", script_stripped])
+      end
+
       private
+
+      def ensure_in_every_block!(name)
+        return if @current_entry
+
+        raise LoadError.new("#{name}() must be called inside every() block", path: path)
+      end
+
+      def normalize_shell_script(script)
+        unless script.is_a?(String)
+          raise LoadError.new("shell() script must be a String (got #{script.class})",
+                              path: path)
+        end
+
+        stripped = script.strip
+        raise LoadError.new("shell() script must not be empty", path: path) if stripped.empty?
+
+        stripped
+      end
+
+      def normalize_shell_executable(shell)
+        stripped = shell.to_s.strip
+        raise LoadError.new("shell() shell must not be empty", path: path) if stripped.empty?
+
+        stripped
+      end
 
       def with_current_entry(entry)
         previous_entry = @current_entry

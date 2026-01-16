@@ -62,6 +62,12 @@ class SystemdRendererIntervalTest < Minitest::Test
     assert_includes service.contents, "Type=oneshot"
     assert_includes service.contents, "ExecStart=echo hello"
   end
+
+  def test_interval_service_contains_execstart_for_argv
+    entry = interval_entry(seconds: 60, command: ["echo", "hello world"])
+    service = service_for(entry)
+    assert_includes service.contents, "ExecStart=echo \"hello world\""
+  end
 end
 
 class SystemdRendererCalendarTest < Minitest::Test

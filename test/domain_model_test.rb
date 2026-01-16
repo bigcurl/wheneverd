@@ -61,7 +61,7 @@ class DomainModelTest < Minitest::Test
     assert_raises(Wheneverd::InvalidCommandError) { Wheneverd::Job::Command.new(command: "   ") }
 
     error = assert_raises(Wheneverd::InvalidCommandError) { Wheneverd::Job::Command.new(command: 123) }
-    assert_includes error.message, "String"
+    assert_includes error.message, "String or an Array"
   end
 
   def test_triggers_render_timer_lines

@@ -137,13 +137,26 @@ end
 
 ### `command`
 
-`command("...")` appends a oneshot `ExecStart=` job. Commands must be non-empty strings.
+`command(...)` appends a oneshot `ExecStart=` job.
 
-The command string is inserted into `ExecStart=` as-is (no shell wrapping). If you need shell features
-(pipes, redirects, globbing, env var expansion), wrap it yourself, for example:
+Accepted forms:
+
+- `command("...")` (String): inserted into `ExecStart=` as-is (after stripping surrounding whitespace).
+- `command(["bin", "arg1", "arg2"])` (argv Array): formatted/escaped into a systemd-compatible `ExecStart=` string.
+
+If you need shell features (pipes, redirects, globbing, env var expansion), either wrap it yourself, or use `shell`:
 
 ```ruby
 command "/bin/bash -lc 'echo hello | sed -e s/hello/hi/'"
+command ["/bin/bash", "-lc", "echo hello | sed -e s/hello/hi/"]
+```
+
+### `shell`
+
+`shell("...")` is a convenience helper for the common `/bin/bash -lc` pattern:
+
+```ruby
+shell "echo hello | sed -e s/hello/hi/"
 ```
 
 ### `every` periods
