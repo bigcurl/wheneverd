@@ -5,6 +5,8 @@ On release, entries are moved into `## x.y.z` sections that match the gem versio
 
 ## Unreleased
 
+- Docs: adds a copy/paste “deploy a simple schedule” example and refines README status section.
+
 ## 0.3.0
 
 - Schedule DSL: `command` accepts argv arrays, adds a `shell` helper for `/bin/bash -lc`, and `wheneverd init` includes examples.

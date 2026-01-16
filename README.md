@@ -4,13 +4,22 @@ Wheneverd is to systemd timers what the [`whenever` gem](https://github.com/java
 
 ## Status
 
-Pre-1.0, but working end-to-end for user systemd timers:
+Pre-1.0, but working end-to-end for systemd user timers on Linux:
 
 - Loads a Ruby schedule DSL file (default: `config/schedule.rb`).
 - Renders systemd `.service`/`.timer` units (interval, calendar, and 5-field cron schedules).
-- Writes, lists, and deletes generated unit files (default: `~/.config/systemd/user`).
+- Writes, diffs, shows, and deletes generated unit files (default: `~/.config/systemd/user`).
 - Enables/starts/stops/disables/restarts timers via `systemctl --user`.
+- Validates `OnCalendar=` values with `systemd-analyze` (optional unit verification).
 - Manages lingering via `loginctl` (so timers can run while logged out).
+
+Non-goals / not yet implemented:
+
+- System-level units (`/etc/systemd/system`) / `systemctl` without `--user`.
+- Non-systemd schedulers (cron, launchd, etc).
+- Non-Linux platforms (no Windows/macOS support).
+
+Expect the CLI and generated unit details to change until 1.0.
 
 See `FEATURE_SUMMARY.md` for user-visible behavior, and `CHANGELOG.md` for release notes.
 
@@ -60,6 +69,40 @@ end
 every 1.day, at: "4:30 am" do
   command "echo four_thirty"
 end
+```
+
+### Deploy a simple schedule (copy/paste)
+
+From your project root (the default identifier is the current directory name):
+
+```bash
+# Install (skip if already in your Gemfile)
+bundle add wheneverd
+bundle install
+
+# Write a schedule that appends a timestamp to ~/.cache/wheneverd-demo.log every minute
+mkdir -p config
+cat > config/schedule.rb <<'RUBY'
+# frozen_string_literal: true
+
+every "1m" do
+  shell "mkdir -p ~/.cache && date >> ~/.cache/wheneverd-demo.log"
+end
+RUBY
+
+# Preview, write units, and enable/start the timer(s)
+bundle exec wheneverd show
+bundle exec wheneverd validate
+bundle exec wheneverd write
+bundle exec wheneverd activate
+
+# Verify it’s installed and running
+bundle exec wheneverd status
+tail -n 5 ~/.cache/wheneverd-demo.log
+
+# Stop/disable timers and remove generated unit files
+bundle exec wheneverd deactivate
+bundle exec wheneverd delete
 ```
 
 Preview the generated units:
