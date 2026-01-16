@@ -32,7 +32,7 @@ module Wheneverd
       end
 
       every :hour do
-        command "echo hourly"
+        command ["echo", "hello world"]
       end
 
       every :sunday, at: "12pm" do
@@ -41,6 +41,10 @@ module Wheneverd
 
       every :tuesday, :wednesday, at: "12pm" do
         command "echo midweek"
+      end
+
+      every :day, at: "12:15" do
+        shell "echo hello | sed -e s/hello/hi/"
       end
 
       every "0 0 27-31 * *" do

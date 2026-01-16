@@ -46,6 +46,8 @@ wheneverd current
 wheneverd linger
 ```
 
+Use `wheneverd init` to create a starter `config/schedule.rb` template (including examples for `command` and `shell`).
+
 ### Minimal `config/schedule.rb` example
 
 ```ruby

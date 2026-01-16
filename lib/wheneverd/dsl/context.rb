@@ -44,6 +44,12 @@ module Wheneverd
 
       # Add a oneshot command job to the current `every` entry.
       #
+      # @example String command
+      #   command "echo hello"
+      #
+      # @example argv command
+      #   command ["echo", "hello world"]
+      #
       # @param command_value [String, Array<String>]
       # @return [void]
       def command(command_value)
