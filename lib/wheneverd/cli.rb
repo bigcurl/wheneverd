@@ -63,6 +63,8 @@ end
 require_relative "cli/help"
 require_relative "cli/init"
 require_relative "cli/show"
+require_relative "cli/status"
+require_relative "cli/diff"
 require_relative "cli/validate"
 require_relative "cli/write"
 require_relative "cli/delete"
@@ -79,6 +81,8 @@ module Wheneverd
     subcommand "help", "Show help", Wheneverd::CLI::Help
     subcommand "init", "Create a schedule template", Wheneverd::CLI::Init
     subcommand "show", "Render units to stdout", Wheneverd::CLI::Show
+    subcommand "status", "Show systemctl list-timers + status for this identifier", Wheneverd::CLI::Status
+    subcommand "diff", "Diff rendered units vs files on disk", Wheneverd::CLI::Diff
     subcommand "validate", "Validate schedule via systemd-analyze", Wheneverd::CLI::Validate
     subcommand "write", "Write units to disk", Wheneverd::CLI::Write
     subcommand "delete", "Delete units from disk", Wheneverd::CLI::Delete

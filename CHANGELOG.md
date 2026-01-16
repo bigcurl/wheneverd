@@ -6,6 +6,7 @@ On release, entries are moved into `## x.y.z` sections that match the gem versio
 ## Unreleased
 
 - Schedule DSL: `command` accepts argv arrays, and adds a `shell` helper for `/bin/bash -lc`.
+- Adds `wheneverd status` (show `systemctl --user list-timers` + `systemctl --user status` for installed timers) and `wheneverd diff` (diff rendered units vs files on disk).
 - Adds `wheneverd validate` to validate rendered `OnCalendar=` values via `systemd-analyze calendar` (and with `--verify`, runs `systemd-analyze --user verify` on temporary unit files).
 
 ## 0.2.1

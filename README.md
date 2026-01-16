@@ -34,6 +34,8 @@ bundle install
 wheneverd --help
 wheneverd init
 wheneverd show
+wheneverd status
+wheneverd diff
 wheneverd validate
 wheneverd write
 wheneverd delete
@@ -217,11 +219,14 @@ Notes:
 - Unit basenames include a stable ID derived from the job’s trigger + command (reordering schedule blocks won’t rename units).
 - `wheneverd write` / `wheneverd reload` prune previously generated units for the identifier by default (use `--no-prune` to keep old units around).
 - `--unit-dir` controls where unit files are written/read/deleted; `activate`/`deactivate` use systemd’s unit search path.
+- `wheneverd diff` returns exit status `0` when no differences are found, and `1` when differences are found.
 
 Commands:
 
 - `wheneverd init [--schedule PATH] [--force]` writes a template schedule file.
 - `wheneverd show [--schedule PATH] [--identifier NAME]` prints rendered units to stdout.
+- `wheneverd status [--identifier NAME] [--unit-dir PATH]` prints `systemctl --user list-timers` and `systemctl --user status` for installed timers.
+- `wheneverd diff [--schedule PATH] [--identifier NAME] [--unit-dir PATH]` diffs rendered units vs unit files on disk.
 - `wheneverd validate [--schedule PATH] [--identifier NAME] [--verify]` validates rendered `OnCalendar=` values via `systemd-analyze calendar` (and with `--verify`, runs `systemd-analyze --user verify` on temporary unit files).
 - `wheneverd write [--schedule PATH] [--identifier NAME] [--unit-dir PATH] [--dry-run] [--[no-]prune]` writes units to disk (or prints paths in `--dry-run` mode).
 - `wheneverd delete [--identifier NAME] [--unit-dir PATH] [--dry-run]` deletes previously generated units for the identifier.
