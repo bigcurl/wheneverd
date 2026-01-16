@@ -14,10 +14,13 @@ It complements [`CHANGELOG.md`](CHANGELOG.md) by staying high-level and focusing
 
 ## 0.2.1
 
-- Adds `wheneverd linger enable|disable|status` for managing systemd user lingering via `loginctl`.
 - Removes an unused filtering metadata keyword argument from the schedule DSL.
 
 ## 0.2.0
+
+- Adds `wheneverd linger enable|disable|status` for managing systemd user lingering via `loginctl`.
+
+## 0.1.0
 
 - The `wheneverd` CLI is implemented using Clamp (`--help`, usage errors in `ERROR: ...` format, `--verbose` for details).
 - The gem includes a small “whenever-like” domain model (interval parsing, durations, triggers, schedules).
