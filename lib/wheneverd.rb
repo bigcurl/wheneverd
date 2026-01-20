@@ -11,14 +11,15 @@ module Wheneverd
   # - {Wheneverd::DSL::Loader} for evaluating `config/schedule.rb`
   # - {Wheneverd::Systemd::Renderer} for generating unit contents
   # - {Wheneverd::CLI} for the command-line interface
-  class Error < StandardError; end
 end
 
 require_relative "wheneverd/errors"
+require_relative "wheneverd/validation"
 require_relative "wheneverd/duration"
 require_relative "wheneverd/interval"
 require_relative "wheneverd/core_ext/numeric_duration"
 require_relative "wheneverd/job/command"
+require_relative "wheneverd/trigger/base"
 require_relative "wheneverd/trigger/interval"
 require_relative "wheneverd/trigger/calendar"
 require_relative "wheneverd/trigger/boot"
@@ -30,10 +31,12 @@ require_relative "wheneverd/dsl/period_parser"
 require_relative "wheneverd/dsl/context"
 require_relative "wheneverd/dsl/loader"
 require_relative "wheneverd/systemd/errors"
+require_relative "wheneverd/systemd/unit_path_utils"
 require_relative "wheneverd/systemd/time_parser"
 require_relative "wheneverd/systemd/cron_parser"
 require_relative "wheneverd/systemd/calendar_spec"
 require_relative "wheneverd/systemd/unit_namer"
+require_relative "wheneverd/systemd/unit_content_builder"
 require_relative "wheneverd/systemd/renderer"
 require_relative "wheneverd/systemd/analyze"
 require_relative "wheneverd/systemd/systemctl"

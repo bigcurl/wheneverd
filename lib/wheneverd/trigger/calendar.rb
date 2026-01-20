@@ -4,6 +4,8 @@ module Wheneverd
   module Trigger
     # A calendar trigger, rendered as one or more `OnCalendar=` lines.
     class Calendar
+      include Base
+
       # @return [Array<String>] calendar specs (already in `systemd` OnCalendar format)
       attr_reader :on_calendar
 
@@ -20,6 +22,11 @@ module Wheneverd
       # @return [Array<String>] systemd `[Timer]` lines for this trigger
       def systemd_timer_lines
         on_calendar.map { |spec| "OnCalendar=#{spec}" }
+      end
+
+      # @return [String] stable signature for unit naming
+      def signature
+        "calendar:#{on_calendar.sort.join('|')}"
       end
     end
   end

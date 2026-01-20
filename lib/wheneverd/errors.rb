@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Wheneverd
+  # Base error class for wheneverd exceptions.
+  class Error < StandardError; end
+
   # Raised when {Wheneverd::Interval.parse} cannot parse or validate an interval string.
   class InvalidIntervalError < Error; end
 

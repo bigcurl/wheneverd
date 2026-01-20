@@ -67,7 +67,7 @@ module Wheneverd
       private_class_method :prune_stale_units
 
       def self.stale_unit_paths(dest_dir, identifier:, keep:)
-        pattern = basename_pattern(identifier)
+        pattern = UnitPathUtils.basename_pattern(identifier)
         Dir.children(dest_dir).filter_map do |basename|
           next if keep.key?(basename)
 
@@ -83,35 +83,9 @@ module Wheneverd
         return false unless pattern.match?(basename)
         return false unless File.file?(path)
 
-        generated_marker?(path)
+        UnitPathUtils.generated_marker?(path)
       end
       private_class_method :stale_unit_path?
-
-      def self.basename_pattern(identifier)
-        id = sanitize_identifier(identifier)
-        /\Awheneverd-#{Regexp.escape(id)}-(?:[0-9a-f]{12}(?:-\d+)?|e\d+-j\d+)\.(service|timer)\z/
-      end
-      private_class_method :basename_pattern
-
-      def self.generated_marker?(path)
-        first_line = File.open(path, "r") { |f| f.gets.to_s }
-        first_line.start_with?(Wheneverd::Systemd::Renderer::MARKER_PREFIX)
-      end
-      private_class_method :generated_marker?
-
-      def self.sanitize_identifier(identifier)
-        raw = identifier.to_s.strip
-        raise InvalidIdentifierError, "identifier must not be empty" if raw.empty?
-
-        sanitized = raw.gsub(/[^A-Za-z0-9_-]/, "-").gsub(/-+/, "-").gsub(/\A-|-+\z/, "")
-        if sanitized.empty?
-          raise InvalidIdentifierError,
-                "identifier must include at least one alphanumeric character"
-        end
-
-        sanitized
-      end
-      private_class_method :sanitize_identifier
 
       def self.atomic_write(dest_path, contents, dir:)
         basename = File.basename(dest_path)

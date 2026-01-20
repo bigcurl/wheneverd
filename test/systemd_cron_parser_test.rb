@@ -38,28 +38,51 @@ class SystemdCronParserTest < Minitest::Test
     end
   end
 
-  def test_private_helpers_reject_empty_numeric_field
-    assert_private_unsupported(
-      :parse_mapped_numeric_expression,
-      "",
-      0..59,
-      field: "minute",
-      input: "x",
-      names: {}
-    )
+  def test_field_parser_rejects_empty_numeric_field
+    assert_raises(Wheneverd::Systemd::UnsupportedCronError) do
+      Wheneverd::Systemd::CronParser::FieldParser.parse_mapped(
+        "",
+        0..59,
+        field: "minute",
+        input: "x",
+        names: {}
+      )
+    end
   end
 
-  def test_private_helpers_reject_invalid_numeric_tokens
-    common = { field: "minute", input: "x", names: {} }
-    assert_private_unsupported(:parse_mapped_value, " ", 0..59, **common)
-    assert_private_unsupported(:parse_positive_int, "x", field: "minute", input: "x", label: "step")
+  def test_field_parser_rejects_invalid_numeric_tokens
+    # Empty token (just whitespace)
+    assert_raises(Wheneverd::Systemd::UnsupportedCronError) do
+      Wheneverd::Systemd::CronParser::FieldParser.parse_mapped(
+        " ",
+        0..59,
+        field: "minute",
+        input: "x",
+        names: {}
+      )
+    end
   end
 
-  def test_private_helpers_reject_empty_dow_and_invalid_tokens
-    assert_private_unsupported(:parse_dow_set, "", input: "x")
-    assert_private_unsupported(:apply_dow_part, Array.new(7, false), "", input: "x")
-    assert_private_unsupported(:parse_dow_value, "", input: "x")
-    assert_private_unsupported(:parse_dow_value, "8", input: "x")
+  def test_dow_parser_rejects_empty_and_invalid_tokens
+    # Empty day-of-week field
+    assert_raises(Wheneverd::Systemd::UnsupportedCronError) do
+      Wheneverd::Systemd::CronParser::DowParser.parse("", input: "x")
+    end
+
+    # Out of range day-of-week value (8)
+    assert_raises(Wheneverd::Systemd::UnsupportedCronError) do
+      Wheneverd::Systemd::CronParser::DowParser.parse("8", input: "x")
+    end
+
+    # Invalid step (non-numeric)
+    assert_raises(Wheneverd::Systemd::UnsupportedCronError) do
+      Wheneverd::Systemd::CronParser::DowParser.parse("*/x", input: "x")
+    end
+
+    # Invalid step (zero)
+    assert_raises(Wheneverd::Systemd::UnsupportedCronError) do
+      Wheneverd::Systemd::CronParser::DowParser.parse("*/0", input: "x")
+    end
   end
 
   def test_rejects_unsupported_cron_patterns
@@ -95,13 +118,6 @@ class SystemdCronParserTest < Minitest::Test
 
   def assert_values(cron, expected)
     assert_equal expected, Wheneverd::Systemd::CronParser.to_on_calendar_values(cron)
-  end
-
-  def assert_private_unsupported(method, *args, **kwargs)
-    parser = Wheneverd::Systemd::CronParser
-    assert_raises(Wheneverd::Systemd::UnsupportedCronError) do
-      parser.send(method, *args, **kwargs)
-    end
   end
 
   def assert_unsupported(*crons)

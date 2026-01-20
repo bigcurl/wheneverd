@@ -44,7 +44,7 @@ class SystemdRendererErrorsTest < Minitest::Test
 
   def test_timer_lines_for_rejects_unknown_trigger
     assert_raises(ArgumentError) do
-      Wheneverd::Systemd::Renderer.send(:timer_lines_for, Object.new)
+      Wheneverd::Systemd::UnitContentBuilder.timer_lines_for(Object.new)
     end
   end
 

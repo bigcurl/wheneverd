@@ -37,26 +37,20 @@ module Wheneverd
       private_class_method :signature
 
       def self.trigger_signature(trigger)
-        case trigger
-        when Wheneverd::Trigger::Interval
-          "interval:#{trigger.seconds}"
-        when Wheneverd::Trigger::Boot
-          "boot:#{trigger.seconds}"
-        when Wheneverd::Trigger::Calendar
-          "calendar:#{trigger.on_calendar.sort.join('|')}"
-        else
+        unless trigger.respond_to?(:signature)
           raise ArgumentError, "Unsupported trigger type: #{trigger.class}"
         end
+
+        trigger.signature
       end
       private_class_method :trigger_signature
 
       def self.job_signature(job)
-        case job
-        when Wheneverd::Job::Command
-          job.signature
-        else
+        unless job.respond_to?(:signature)
           raise ArgumentError, "Unsupported job type: #{job.class}"
         end
+
+        job.signature
       end
       private_class_method :job_signature
 

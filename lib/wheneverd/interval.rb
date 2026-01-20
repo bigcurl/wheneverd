@@ -21,17 +21,32 @@ module Wheneverd
     # @return [Integer] seconds
     # @raise [Wheneverd::InvalidIntervalError] if the input is invalid
     def self.parse(str)
-      input = str.to_s.strip
-      match = FORMAT.match(input)
-      unless match
-        raise InvalidIntervalError,
-              "Invalid interval #{input.inspect}; expected <n>s|m|h|d|w (example: \"5m\")"
-      end
-
-      n = Integer(match[:n], 10)
-      raise InvalidIntervalError, "Interval must be positive (got #{input.inspect})" if n <= 0
-
+      input = normalize_input(str)
+      match = parse_match(input)
+      n = parse_number(match[:n], input)
       n * MULTIPLIERS.fetch(match[:unit])
     end
+
+    def self.normalize_input(str)
+      str.to_s.strip
+    end
+    private_class_method :normalize_input
+
+    def self.parse_match(input)
+      match = FORMAT.match(input)
+      return match if match
+
+      raise InvalidIntervalError,
+            "Invalid interval #{input.inspect}; expected <n>s|m|h|d|w (example: \"5m\")"
+    end
+    private_class_method :parse_match
+
+    def self.parse_number(number_str, input)
+      n = Integer(number_str, 10)
+      raise InvalidIntervalError, "Interval must be positive (got #{input.inspect})" if n <= 0
+
+      n
+    end
+    private_class_method :parse_number
   end
 end

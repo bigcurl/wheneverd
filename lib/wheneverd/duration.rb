@@ -11,13 +11,7 @@ module Wheneverd
 
     # @param seconds [Integer] duration in seconds (must be positive)
     def initialize(seconds)
-      unless seconds.is_a?(Integer)
-        raise ArgumentError, "Duration seconds must be an Integer (got #{seconds.class})"
-      end
-
-      raise ArgumentError, "Duration seconds must be positive (got #{seconds})" if seconds <= 0
-
-      @seconds = seconds
+      @seconds = Validation.positive_integer(seconds, name: "Duration seconds")
     end
 
     def to_i
