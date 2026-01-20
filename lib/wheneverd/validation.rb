@@ -25,7 +25,8 @@ module Wheneverd
     def self.type(value, expected_type, name:)
       return value if value.is_a?(expected_type)
 
-      raise ArgumentError, "#{name} must be #{expected_type_name(expected_type)} (got #{value.class})"
+      raise ArgumentError,
+            "#{name} must be #{expected_type_name(expected_type)} (got #{value.class})"
     end
 
     # Validate that a value is a positive integer.

@@ -46,9 +46,7 @@ module Wheneverd
       private_class_method :trigger_signature
 
       def self.job_signature(job)
-        unless job.respond_to?(:signature)
-          raise ArgumentError, "Unsupported job type: #{job.class}"
-        end
+        raise ArgumentError, "Unsupported job type: #{job.class}" unless job.respond_to?(:signature)
 
         job.signature
       end

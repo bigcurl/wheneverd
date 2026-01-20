@@ -5,7 +5,15 @@ On release, entries are moved into `## x.y.z` sections that match the gem versio
 
 ## Unreleased
 
-- Docs: adds a copy/paste “deploy a simple schedule” example and refines README status section.
+## 0.4.0
+
+- Docs: adds a copy/paste "deploy a simple schedule" example and refines README status section.
+- Refactor: extracts `UnitPathUtils` module for shared identifier/path utilities across `UnitWriter`, `UnitDeleter`, `UnitLister`, and `Renderer`.
+- Refactor: adds polymorphic `Trigger::Base` interface with `#systemd_timer_lines` and `#signature` methods for all trigger types.
+- Refactor: splits `CronParser` into focused `FieldParser` and `DowParser` submodules for maintainability.
+- Refactor: implements strategy pattern for `PeriodParser` with dedicated strategies for Duration, String, Symbol, and Array inputs.
+- Refactor: extracts `UnitContentBuilder` from `Renderer` for cleaner separation of unit content generation.
+- Refactor: adds `Validation` module with composable validators (`type`, `positive_integer`, `non_empty_string`, `non_empty_array`, `in_range`).
 
 ## 0.3.0
 

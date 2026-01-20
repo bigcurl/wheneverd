@@ -90,7 +90,10 @@ module Wheneverd
           raw = token.to_s.strip
           raise_empty_token_error(field, input) if raw.empty?
 
-          return parse_numeric_value(raw, range, field: field, input: input) if /\A\d+\z/.match?(raw)
+          if /\A\d+\z/.match?(raw)
+            return parse_numeric_value(raw, range, field: field,
+                                                   input: input)
+          end
 
           parse_named_value(raw, range, field: field, input: input, names: names)
         end

@@ -7,7 +7,7 @@ module Wheneverd
       #
       # Handles interval strings (e.g., "5m", "1h") and cron expressions.
       class StringStrategy < Base
-        INTERVAL_PATTERN = /\A-?\d+[smhdw]\z/
+        INTERVAL_PATTERN = /\A-?\d+[smhdw]\z/.freeze
 
         def handles?(period)
           period.is_a?(String)
@@ -26,18 +26,14 @@ module Wheneverd
         private
 
         def parse_interval(period_str, at_times:)
-          if at_times.any?
-            raise_period_error("at: is not supported for interval periods")
-          end
+          raise_period_error("at: is not supported for interval periods") if at_times.any?
 
           seconds = Wheneverd::Interval.parse(period_str)
           interval_trigger(seconds: seconds)
         end
 
         def parse_cron(period_str, at_times:)
-          if at_times.any?
-            raise_period_error("at: is not supported for cron periods")
-          end
+          raise_period_error("at: is not supported for cron periods") if at_times.any?
 
           calendar_trigger(on_calendar: ["cron:#{period_str}"])
         end

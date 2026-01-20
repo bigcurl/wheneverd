@@ -65,9 +65,11 @@ module Wheneverd
         minute_str, hour_str, dom_str, month_str, dow_str = fields
 
         ParsedFields.new(
-          minute: FieldParser.parse_numeric(minute_str, 0..59, field: "minute", input: input, pad: 2),
+          minute: FieldParser.parse_numeric(minute_str, 0..59, field: "minute", input: input,
+                                                               pad: 2),
           hour: FieldParser.parse_numeric(hour_str, 0..23, field: "hour", input: input, pad: 2),
-          dom: FieldParser.parse_numeric(dom_str, 1..31, field: "day-of-month", input: input, pad: 0),
+          dom: FieldParser.parse_numeric(dom_str, 1..31, field: "day-of-month", input: input,
+                                                         pad: 0),
           month: FieldParser.parse_mapped(month_str, 1..12, field: "month", input: input,
                                                             names: MONTH_NAMES),
           dow_set: DowParser.parse(dow_str, input: input)
