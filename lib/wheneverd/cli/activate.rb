@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 module Wheneverd
-  # Implements `wheneverd activate` (enable + start timers via `systemctl --user`).
+  # Implements `wheneverd activate` (enable + start timers/services via `systemctl --user`).
   class CLI::Activate < CLI
     def execute
-      timer_units = timer_unit_basenames
-      return 0 if timer_units.empty?
+      units = activatable_unit_basenames
+      return 0 if units.empty?
 
       Wheneverd::Systemd::Systemctl.run("daemon-reload")
-      Wheneverd::Systemd::Systemctl.run("enable", "--now", *timer_units)
+      Wheneverd::Systemd::Systemctl.run("enable", "--now", *units)
 
-      timer_units.each { |unit| puts unit }
+      units.each { |unit| puts unit }
       0
     rescue StandardError => e
       handle_error(e)

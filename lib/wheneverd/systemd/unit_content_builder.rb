@@ -22,6 +22,29 @@ module Wheneverd
         )
       end
 
+      # Build a long-running service unit file.
+      #
+      # @param path_basename [String] unit file name for description
+      # @param service [Wheneverd::Service]
+      # @return [String] complete unit file contents
+      def self.standalone_service_contents(path_basename, service)
+        build_unit(
+          description: "wheneverd service #{path_basename}",
+          sections: [
+            "[Service]",
+            "Type=simple",
+            "ExecStart=#{service.command.command}",
+            "Restart=#{service.restart}",
+            "RestartSec=#{service.restart_sec}",
+            *service.service_lines,
+            "",
+            "[Install]",
+            "WantedBy=default.target",
+            ""
+          ]
+        )
+      end
+
       # Build timer unit file contents.
       #
       # @param path_basename [String] unit file name for description

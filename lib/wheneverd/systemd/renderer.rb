@@ -10,7 +10,7 @@ module Wheneverd
     #   @return [Symbol] `:service` or `:timer`
     # @!attribute [r] contents
     #   @return [String] unit file contents
-    Unit = Struct.new(:path_basename, :kind, :contents, keyword_init: true)
+    Unit = Struct.new(:path_basename, :kind, :contents, :activation, keyword_init: true)
 
     # Renders a {Wheneverd::Schedule} into systemd units.
     #
@@ -52,7 +52,7 @@ module Wheneverd
         stable_ids = Wheneverd::Systemd::UnitNamer.stable_ids_for(schedule)
         stable_id_index = 0
 
-        schedule.entries.flat_map do |entry|
+        units = schedule.entries.flat_map do |entry|
           entry.jobs.flat_map do |job|
             stable_id = stable_ids.fetch(stable_id_index)
             stable_id_index += 1
@@ -60,8 +60,19 @@ module Wheneverd
             render_job(base, entry.trigger, job)
           end
         end
+        units.concat(render_services(schedule.services, id))
+        units
       end
       private_class_method :render_schedule
+
+      def self.render_services(services, id)
+        services.map do |service|
+          stable_id = Wheneverd::Systemd::UnitNamer.stable_id_for(service.signature)
+          base = "wheneverd-#{id}-#{stable_id}"
+          build_standalone_service_unit("#{base}.service", service)
+        end
+      end
+      private_class_method :render_services
 
       def self.render_job(base, trigger, job)
         service = build_service_unit("#{base}.service", job)
@@ -74,17 +85,29 @@ module Wheneverd
         Unit.new(
           path_basename: path_basename,
           kind: :service,
-          contents: UnitContentBuilder.service_contents(path_basename, job.command)
+          contents: UnitContentBuilder.service_contents(path_basename, job.command),
+          activation: :timer_managed
         )
       end
       private_class_method :build_service_unit
+
+      def self.build_standalone_service_unit(path_basename, service)
+        Unit.new(
+          path_basename: path_basename,
+          kind: :service,
+          contents: UnitContentBuilder.standalone_service_contents(path_basename, service),
+          activation: :service
+        )
+      end
+      private_class_method :build_standalone_service_unit
 
       def self.build_timer_unit(path_basename, trigger)
         timer_lines = UnitContentBuilder.timer_lines_for(trigger)
         Unit.new(
           path_basename: path_basename,
           kind: :timer,
-          contents: UnitContentBuilder.timer_contents(path_basename, timer_lines)
+          contents: UnitContentBuilder.timer_contents(path_basename, timer_lines),
+          activation: :timer
         )
       end
       private_class_method :build_timer_unit

@@ -75,6 +75,37 @@ module Wheneverd
         command([shell_executable, "-lc", script_stripped])
       end
 
+      # Add a long-running systemd user service to the schedule.
+      #
+      # @example Shell service
+      #   service "worker", shell: "bundle exec bin/worker"
+      #
+      # @example Argv service
+      #   service "worker", command: ["bundle", "exec", "bin/worker"]
+      #
+      # @param name [String] stable service name within the schedule
+      # @param command [String, Array<String>, nil]
+      # @param shell [String, nil] shell script to run via /bin/bash -lc
+      # @param restart [String]
+      # @param restart_sec [String]
+      # @param service [Hash, Array<String>] extra [Service] lines
+      # @return [Wheneverd::Service]
+      def service(name, command: nil, shell: nil, restart: "always", restart_sec: "5s",
+                  service: {})
+        command_value = normalize_service_command(command: command, shell: shell)
+        service_obj = Wheneverd::Service.new(
+          name: name,
+          command: command_value,
+          restart: restart,
+          restart_sec: restart_sec,
+          service: service
+        )
+        schedule.add_service(service_obj)
+        service_obj
+      rescue Wheneverd::InvalidCommandError => e
+        raise LoadError.new(e.message, path: path)
+      end
+
       private
 
       def ensure_in_every_block!(name)
@@ -100,6 +131,21 @@ module Wheneverd
         raise LoadError.new("shell() shell must not be empty", path: path) if stripped.empty?
 
         stripped
+      end
+
+      def normalize_service_command(command:, shell:)
+        if command && shell
+          raise LoadError.new("service() accepts command: or shell:, not both", path: path)
+        end
+
+        return command if command
+
+        if shell
+          script = normalize_shell_script(shell)
+          return ["/bin/bash", "-lc", script]
+        end
+
+        raise LoadError.new("service() requires command: or shell:", path: path)
       end
 
       def with_current_entry(entry)

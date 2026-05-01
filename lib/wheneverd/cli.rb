@@ -51,12 +51,14 @@ module Wheneverd
     end
 
     # @param units [Array<Wheneverd::Systemd::Unit>]
-    # @return [Array<String>] timer unit basenames
-    def timer_unit_basenames(units = render_units)
-      units.select { |unit| unit.kind == :timer }.map(&:path_basename).uniq
+    # @return [Array<String>] timer and standalone service unit basenames
+    def activatable_unit_basenames(units = render_units)
+      units.select { |unit| %i[timer service].include?(unit.activation) }
+           .map(&:path_basename)
+           .uniq
     end
 
-    private :render_units, :timer_unit_basenames
+    private :render_units, :activatable_unit_basenames
   end
 end
 
@@ -81,14 +83,14 @@ module Wheneverd
     subcommand "help", "Show help", Wheneverd::CLI::Help
     subcommand "init", "Create a schedule template", Wheneverd::CLI::Init
     subcommand "show", "Render units to stdout", Wheneverd::CLI::Show
-    subcommand "status", "Show systemctl list-timers + status for this identifier", Wheneverd::CLI::Status
+    subcommand "status", "Show systemctl status for this identifier", Wheneverd::CLI::Status
     subcommand "diff", "Diff rendered units vs files on disk", Wheneverd::CLI::Diff
     subcommand "validate", "Validate schedule via systemd-analyze", Wheneverd::CLI::Validate
     subcommand "write", "Write units to disk", Wheneverd::CLI::Write
     subcommand "delete", "Delete units from disk", Wheneverd::CLI::Delete
-    subcommand "activate", "Enable and start timers via systemctl --user", Wheneverd::CLI::Activate
-    subcommand "deactivate", "Stop and disable timers via systemctl --user", Wheneverd::CLI::Deactivate
-    subcommand "reload", "Write units, reload daemon, restart timers", Wheneverd::CLI::Reload
+    subcommand "activate", "Enable and start timers/services via systemctl --user", Wheneverd::CLI::Activate
+    subcommand "deactivate", "Stop and disable timers/services via systemctl --user", Wheneverd::CLI::Deactivate
+    subcommand "reload", "Write units, reload daemon, restart timers/services", Wheneverd::CLI::Reload
     subcommand "current", "Show installed units from disk", Wheneverd::CLI::Current
     subcommand "linger", "Manage systemd user lingering via loginctl", Wheneverd::CLI::Linger
   end

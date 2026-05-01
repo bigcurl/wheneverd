@@ -41,6 +41,29 @@ class CLIReloadSuccessTest < Minitest::Test
                                         includes: expected_timer_basenames)
     end
   end
+
+  def test_restarts_standalone_services
+    with_service_project_dir do |project_dir|
+      unit_dir = File.join(project_dir, "tmp_units")
+      status, _out, err, calls = run_reload_with_capture3_stub(unit_dir: unit_dir)
+      assert_cli_success(status, err)
+      service = expected_units.find { |unit| unit.activation == :service }.path_basename
+      assert_systemctl_call_starts_with(calls, 1, SYSTEMCTL_USER_PREFIX + ["restart"],
+                                        includes: service)
+    end
+  end
+
+  private
+
+  def with_service_project_dir
+    with_project_dir do |project_dir|
+      FileUtils.mkdir_p("config")
+      File.write("config/schedule.rb", <<~RUBY)
+        service "worker", shell: "bin/worker"
+      RUBY
+      yield project_dir
+    end
+  end
 end
 
 class CLIReloadScheduleMissingTest < Minitest::Test

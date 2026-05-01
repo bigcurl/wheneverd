@@ -5,6 +5,12 @@ On release, entries are moved into `## x.y.z` sections that match the gem versio
 
 ## Unreleased
 
+## 0.5.0
+
+- Adds top-level `service` DSL entries for long-running systemd user services.
+- `activate`, `deactivate`, `reload`, and `status` now manage standalone services alongside timers.
+- Standalone services render as `Type=simple` units with configurable `Restart=`, `RestartSec=`, and extra `[Service]` settings.
+
 ## 0.4.0
 
 - Docs: adds a copy/paste "deploy a simple schedule" example and refines README status section.

@@ -37,6 +37,33 @@ class CLIActivateSuccessTest < Minitest::Test
                                         includes: expected_timer_basenames)
     end
   end
+
+  def test_runs_enable_now_for_standalone_services
+    with_service_project_dir do
+      status, out, err, calls = run_activate_with_capture3_stub
+      assert_cli_success(status, err)
+      service = expected_standalone_service_basenames.fetch(0)
+      assert_includes out, service
+      assert_systemctl_call_starts_with(calls, 1, SYSTEMCTL_USER_PREFIX + ["enable", "--now"],
+                                        includes: service)
+    end
+  end
+
+  private
+
+  def with_service_project_dir
+    with_project_dir do
+      FileUtils.mkdir_p("config")
+      File.write("config/schedule.rb", <<~RUBY)
+        service "worker", shell: "bin/worker"
+      RUBY
+      yield
+    end
+  end
+
+  def expected_standalone_service_basenames
+    expected_units.select { |unit| unit.activation == :service }.map(&:path_basename)
+  end
 end
 
 class CLIActivateScheduleMissingTest < Minitest::Test

@@ -6,11 +6,11 @@ require_relative "support/cli_test_helpers"
 class CLIStatusTest < Minitest::Test
   include CLITestHelpers
 
-  def test_runs_list_timers_and_status_for_each_installed_timer
+  def test_runs_list_timers_and_status_for_each_installed_unit
     with_installed_units do |unit_dir|
       status, _out, err, calls = run_status(unit_dir)
       assert_cli_success(status, err)
-      assert_status_calls(calls, expected_timer_units)
+      assert_status_calls(calls, expected_timer_units, expected_service_units)
     end
   end
 
@@ -39,6 +39,9 @@ class CLIStatusTest < Minitest::Test
 
   def with_installed_units
     with_inited_project_dir do |project_dir|
+      File.open(File.join(project_dir, "config", "schedule.rb"), "a") do |file|
+        file.puts 'service "worker", shell: "bin/worker"'
+      end
       unit_dir = File.join(project_dir, "tmp_units")
       assert_equal 0, run_cli(["write", "--identifier", "demo", "--unit-dir", unit_dir]).first
       yield unit_dir
@@ -53,9 +56,16 @@ class CLIStatusTest < Minitest::Test
     expected_timer_basenames(identifier: "demo").sort
   end
 
-  def assert_status_calls(calls, expected_timers)
+  def expected_service_units
+    expected_units(identifier: "demo")
+      .select { |unit| unit.activation == :service }
+      .map(&:path_basename)
+      .sort
+  end
+
+  def assert_status_calls(calls, expected_timers, expected_services)
     assert_list_timers_call(calls, expected_timers)
-    assert_status_unit_calls(calls, expected_timers)
+    assert_status_unit_calls(calls, (expected_timers + expected_services).sort)
   end
 
   def assert_list_timers_call(calls, expected_timers)

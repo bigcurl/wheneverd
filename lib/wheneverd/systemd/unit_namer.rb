@@ -55,7 +55,6 @@ module Wheneverd
       def self.stable_id_for(signature)
         Digest::SHA256.hexdigest(signature).slice(0, 12)
       end
-      private_class_method :stable_id_for
     end
   end
 end

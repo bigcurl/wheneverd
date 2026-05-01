@@ -167,12 +167,26 @@ Schedules are defined in a Ruby file (default: `config/schedule.rb`) and evaluat
 
 Note: schedule files are executed as Ruby. Do not run untrusted schedule code.
 
-The core shape is:
+The core timer shape is:
 
 ```ruby
 every(period, at: nil) do
   command "echo hello"
 end
+```
+
+Long-running services can be managed from the same schedule with top-level
+`service` entries:
+
+```ruby
+service "worker",
+        shell: "bundle exec bin/worker",
+        restart: "always",
+        restart_sec: "5s",
+        service: {
+          "WorkingDirectory" => "/srv/apps/myapp/current",
+          "Environment" => "RAILS_ENV=production"
+        }
 ```
 
 For calendar schedules, you can also pass multiple period symbols (or an array) to run the same jobs on multiple days:
@@ -270,14 +284,14 @@ Commands:
 
 - `wheneverd init [--schedule PATH] [--force]` writes a template schedule file.
 - `wheneverd show [--schedule PATH] [--identifier NAME]` prints rendered units to stdout.
-- `wheneverd status [--identifier NAME] [--unit-dir PATH]` prints `systemctl --user list-timers` and `systemctl --user status` for installed timers.
+- `wheneverd status [--identifier NAME] [--unit-dir PATH]` prints `systemctl --user list-timers` and `systemctl --user status` for installed timers/services.
 - `wheneverd diff [--schedule PATH] [--identifier NAME] [--unit-dir PATH]` diffs rendered units vs unit files on disk.
 - `wheneverd validate [--schedule PATH] [--identifier NAME] [--verify]` validates rendered `OnCalendar=` values via `systemd-analyze calendar` (and with `--verify`, runs `systemd-analyze --user verify` on temporary unit files).
 - `wheneverd write [--schedule PATH] [--identifier NAME] [--unit-dir PATH] [--dry-run] [--[no-]prune]` writes units to disk (or prints paths in `--dry-run` mode).
 - `wheneverd delete [--identifier NAME] [--unit-dir PATH] [--dry-run]` deletes previously generated units for the identifier.
-- `wheneverd activate [--schedule PATH] [--identifier NAME]` runs `systemctl --user daemon-reload` and enables/starts the timers.
-- `wheneverd deactivate [--schedule PATH] [--identifier NAME]` stops and disables the timers.
-- `wheneverd reload [--schedule PATH] [--identifier NAME] [--unit-dir PATH] [--[no-]prune]` writes units, reloads systemd, and restarts timers.
+- `wheneverd activate [--schedule PATH] [--identifier NAME]` runs `systemctl --user daemon-reload` and enables/starts the timers/services.
+- `wheneverd deactivate [--schedule PATH] [--identifier NAME]` stops and disables the timers/services.
+- `wheneverd reload [--schedule PATH] [--identifier NAME] [--unit-dir PATH] [--[no-]prune]` writes units, reloads systemd, and restarts timers/services.
 - `wheneverd current [--identifier NAME] [--unit-dir PATH]` prints the currently installed unit file contents from disk.
 - `wheneverd linger [--user NAME] [enable|disable|status]` manages lingering via `loginctl` (`status` is the default).
 
